@@ -10,6 +10,7 @@ import {
 import BottomNavigation from "../components/BottomNavigation";
 import PhotoUploadBottomSheet from "../components/PhotoUploadBottomSheet";
 import ProgressCard from "../components/ProgressCard";
+import CompletedContent from "../components/CompletedContent";
 
 interface ChecklistItem {
   id: number;
@@ -95,6 +96,7 @@ function HomePage() {
   ).length;
   const totalCount = checklistItems.length;
   const progressPercent = (completedCount / totalCount) * 100;
+  const isCompleted = completedCount === totalCount;
 
   function handleThumbnailClick(itemId: number) {
     setSelectedItemId(itemId);
@@ -140,51 +142,57 @@ function HomePage() {
           progress={progressPercent}
         />
 
-        {/* Checklist Section */}
-        <div style={checklistSectionStyle}>
-          <div style={checklistHeaderRowStyle}>
-            <Text typography="t4" fontWeight="bold" color={colors.grey900}>
-              체크리스트
-            </Text>
-          </div>
+        {/* Content: In Progress / Completed */}
+        {isCompleted ? (
+          <CompletedContent />
+        ) : (
+          <div style={checklistSectionStyle}>
+            <div style={checklistHeaderRowStyle}>
+              <Text typography="t4" fontWeight="bold" color={colors.grey900}>
+                체크리스트
+              </Text>
+            </div>
 
-          <div style={checklistListStyle}>
-            {checklistItems.map((item, index) => {
-              const completed = !!item.photoUrl;
-              return (
-                <div key={item.id}>
-                  <div style={checklistItemStyle}>
-                    <CheckCircleIcon completed={completed} />
-                    <Text
-                      typography="t5"
-                      fontWeight="regular"
-                      color={completed ? colors.grey900 : colors.grey500}
-                      style={{ flex: 1, marginLeft: 12 }}
-                    >
-                      {item.label}
-                    </Text>
-                    <PhotoThumbnail
-                      photoUrl={item.photoUrl}
-                      onClick={() => handleThumbnailClick(item.id)}
-                    />
+            <div style={checklistListStyle}>
+              {checklistItems.map((item, index) => {
+                const completed = !!item.photoUrl;
+                return (
+                  <div key={item.id}>
+                    <div style={checklistItemStyle}>
+                      <CheckCircleIcon completed={completed} />
+                      <Text
+                        typography="t5"
+                        fontWeight="regular"
+                        color={completed ? colors.grey900 : colors.grey500}
+                        style={{ flex: 1, marginLeft: 12 }}
+                      >
+                        {item.label}
+                      </Text>
+                      <PhotoThumbnail
+                        photoUrl={item.photoUrl}
+                        onClick={() => handleThumbnailClick(item.id)}
+                      />
+                    </div>
+                    {index < checklistItems.length - 1 && (
+                      <div style={dividerStyle} />
+                    )}
                   </div>
-                  {index < checklistItems.length - 1 && (
-                    <div style={dividerStyle} />
-                  )}
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Bottom Area */}
-      <div>
-        <div style={ctaWrapperStyle}>
-          <Button display="full" size="xlarge" style={primaryButtonStyle}>
-            인증하기
-          </Button>
-        </div>
+      <div style={bottomAreaStyle}>
+        {!isCompleted && (
+          <div style={ctaWrapperStyle}>
+            <Button display="full" size="xlarge" style={primaryButtonStyle}>
+              인증하기
+            </Button>
+          </div>
+        )}
         <BottomNavigation activeTab="home" />
       </div>
 
@@ -310,6 +318,10 @@ const photoImageStyle: CSSProperties = {
   width: "100%",
   height: "100%",
   objectFit: "cover",
+};
+
+const bottomAreaStyle: CSSProperties = {
+  backgroundColor: colors.white,
 };
 
 const ctaWrapperStyle: CSSProperties = {
