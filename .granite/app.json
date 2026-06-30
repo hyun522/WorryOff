@@ -1,4 +1,4 @@
 {
-  "appName": "WorryOff",
-  "permissions": ["camera", "notifications"]
+  "appName": "worry-off",
+  "permissions": []
 }
