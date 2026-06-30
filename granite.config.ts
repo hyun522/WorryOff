@@ -1,11 +1,11 @@
 import { defineConfig } from "@apps-in-toss/web-framework/config";
 
 export default defineConfig({
-  appName: ".",
+  appName: "worry-off",
   brand: {
-    displayName: "걱정 off", // 화면에 노출될 앱의 한글 이름으로 바꿔주세요.
-    primaryColor: "#FF8A65", // 화면에 노출될 앱의 기본 색상으로 바꿔주세요.
-    icon: "", // 화면에 노출될 앱의 아이콘 이미지 주소로 바꿔주세요.
+    displayName: "걱정 OFF", // 화면에 노출될 앱의 한글 이름으로 바꿔주세요.
+    primaryColor: "#0863F4", // 화면에 노출될 앱의 기본 색상으로 바꿔주세요.
+    icon: "/logo.png", // 화면에 노출될 앱의 아이콘 이미지 주소로 바꿔주세요.
   },
   web: {
     host: "localhost",
