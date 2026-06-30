@@ -13,3 +13,6 @@ dist/
 
 # logs
 *.log
+
+# Apps in Toss bundle
+*.ait
