@@ -1,5 +1,13 @@
 @docs/skills/apps-in-toss.md
-@docs/skills/tds-mobile.md
+
+When implementing UI,
+always inspect the installed TDS components in the project first.
+
+Prefer existing TDS components over creating custom components.
+
+For UI implementation, prioritize the provided design mockup over the default TDS appearance.
+
+TDS components may be styled or customized when necessary to match the design exactly.
 
 # CLAUDE.md
 
