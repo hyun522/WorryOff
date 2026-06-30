@@ -3,40 +3,39 @@ import { Text } from "@toss/tds-mobile";
 import { colors } from "@toss/tds-colors";
 import { AiFillHome } from "react-icons/ai";
 import { IoDocumentText, IoSettingsSharp } from "react-icons/io5";
-
-export type TabType = "home" | "history" | "settings";
-
-interface BottomNavigationProps {
-  activeTab?: TabType;
-  onTabChange?: (tab: TabType) => void;
-}
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface TabConfig {
-  key: TabType;
+  key: string;
+  path: string;
   label: string;
   Icon: React.ComponentType<{ size: number; color: string }>;
 }
 
 const tabs: TabConfig[] = [
-  { key: "home", label: "홈", Icon: AiFillHome },
-  { key: "history", label: "기록", Icon: IoDocumentText },
-  { key: "settings", label: "설정", Icon: IoSettingsSharp },
+  { key: "home", path: "/home", label: "홈", Icon: AiFillHome },
+  { key: "history", path: "/history", label: "기록", Icon: IoDocumentText },
+  { key: "settings", path: "/settings", label: "설정", Icon: IoSettingsSharp },
 ];
 
-function BottomNavigation({
-  activeTab = "home",
-  onTabChange,
-}: BottomNavigationProps) {
+function BottomNavigation() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const activeKey = tabs.find((t) =>
+    location.pathname.startsWith(t.path)
+  )?.key;
+
   return (
     <div style={tabBarStyle}>
-      {tabs.map(({ key, label, Icon }) => {
-        const active = activeTab === key;
+      {tabs.map(({ key, path, label, Icon }) => {
+        const active = activeKey === key;
         const iconColor = active ? colors.blue500 : colors.grey400;
         return (
           <button
             key={key}
             style={tabItemStyle}
-            onClick={() => onTabChange?.(key)}
+            onClick={() => navigate(path)}
             aria-label={label}
           >
             <Icon size={24} color={iconColor} />

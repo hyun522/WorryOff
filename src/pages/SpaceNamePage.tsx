@@ -2,15 +2,13 @@ import { useState, type CSSProperties } from "react";
 import { Button, Text } from "@toss/tds-mobile";
 import { colors } from "@toss/tds-colors";
 import { IoChevronBack, IoClose } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 import settingHouse from "../assets/setting-house.png";
-
-interface SpaceNamePageProps {
-  onBack?: () => void;
-}
 
 const MAX_LENGTH = 20;
 
-function SpaceNamePage({ onBack }: SpaceNamePageProps) {
+function SpaceNamePage() {
+  const navigate = useNavigate();
   const [value, setValue] = useState("우리집");
 
   const hasValue = value.length > 0;
@@ -19,7 +17,7 @@ function SpaceNamePage({ onBack }: SpaceNamePageProps) {
     <div style={containerStyle}>
       {/* Header */}
       <div style={headerStyle}>
-        <button style={backButtonStyle} onClick={onBack} aria-label="뒤로가기">
+        <button style={backButtonStyle} onClick={() => navigate("/settings")} aria-label="뒤로가기">
           <IoChevronBack size={24} color={colors.grey900} />
         </button>
         <Text typography="t4" fontWeight="bold" color={colors.grey900}>
@@ -118,9 +116,7 @@ function SpaceNamePage({ onBack }: SpaceNamePageProps) {
               borderRadius: 16,
             } as CSSProperties
           }
-          onClick={() => {
-            // 저장 기능 추후 구현
-          }}
+          onClick={() => navigate("/settings")}
         >
           저장
         </Button>

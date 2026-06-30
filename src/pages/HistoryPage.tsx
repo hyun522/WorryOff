@@ -4,7 +4,6 @@ import { colors } from "@toss/tds-colors";
 import { IoCameraOutline } from "react-icons/io5";
 import { FaCheckCircle } from "react-icons/fa";
 import BottomNavigation from "../components/BottomNavigation";
-import type { TabType } from "../components/BottomNavigation";
 
 interface HistoryRecord {
   id: number;
@@ -14,9 +13,6 @@ interface HistoryRecord {
   photos: (string | null)[];
 }
 
-interface HistoryPageProps {
-  onNavigate?: (tab: TabType) => void;
-}
 
 const mockRecords: HistoryRecord[] = [
   {
@@ -177,7 +173,7 @@ function RecordCard({
   );
 }
 
-function HistoryPage({ onNavigate }: HistoryPageProps) {
+function HistoryPage() {
   const recentRecords = mockRecords.filter((r) => isWithinLastMonth(r.date));
 
   return (
@@ -225,7 +221,7 @@ function HistoryPage({ onNavigate }: HistoryPageProps) {
       </div>
 
       {/* BottomNavigation — 고정 */}
-      <BottomNavigation activeTab="history" onTabChange={onNavigate} />
+      <BottomNavigation />
     </div>
   );
 }

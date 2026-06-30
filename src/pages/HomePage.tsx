@@ -7,6 +7,7 @@ import {
   IoCameraOutline,
   IoCheckmarkCircle,
 } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 import BottomNavigation from "../components/BottomNavigation";
 import PhotoUploadBottomSheet from "../components/PhotoUploadBottomSheet";
 import ProgressCard from "../components/ProgressCard";
@@ -86,6 +87,7 @@ function PhotoThumbnail({
 }
 
 function HomePage() {
+  const navigate = useNavigate();
   const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>(
     initialChecklistItems,
   );
@@ -137,6 +139,7 @@ function HomePage() {
 
   function handleViewHistory() {
     setCertModalVisible(false);
+    navigate("/history");
   }
 
   return (
@@ -228,7 +231,7 @@ function HomePage() {
             </Button>
           </div>
         )}
-        <BottomNavigation activeTab="home" />
+        <BottomNavigation />
       </div>
 
       {/* Photo Upload BottomSheet */}

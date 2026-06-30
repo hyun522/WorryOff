@@ -2,8 +2,8 @@ import { useState, type CSSProperties } from "react";
 import { Text } from "@toss/tds-mobile";
 import { colors } from "@toss/tds-colors";
 import { IoChevronForward, IoChevronDown } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 import BottomNavigation from "../components/BottomNavigation";
-import type { TabType } from "../components/BottomNavigation";
 
 type DayKey = "월" | "화" | "수" | "목" | "금" | "토" | "일";
 type DropdownType = "ampm" | "hour" | "minute" | null;
@@ -15,9 +15,6 @@ const MINUTE_OPTIONS = [
   "00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55",
 ];
 
-interface SettingsPageProps {
-  onNavigate?: (tab: TabType) => void;
-}
 
 interface DropdownProps {
   value: string;
@@ -68,7 +65,8 @@ function Dropdown({ value, options, isOpen, onToggle, onSelect }: DropdownProps)
   );
 }
 
-function SettingsPage({ onNavigate }: SettingsPageProps) {
+function SettingsPage() {
+  const navigate = useNavigate();
   const [selectedDays, setSelectedDays] = useState<DayKey[]>(["월"]);
   const [ampm, setAmpm] = useState("오전");
   const [hour, setHour] = useState("08");
@@ -114,7 +112,7 @@ function SettingsPage({ onNavigate }: SettingsPageProps) {
           공간 이름 설정
         </Text>
 
-        <button style={navCardStyle}>
+        <button style={navCardStyle} onClick={() => navigate("/settings/space-name")}>
           <Text typography="t5" fontWeight="regular" color={colors.grey900}>
             우리집
           </Text>
@@ -226,7 +224,7 @@ function SettingsPage({ onNavigate }: SettingsPageProps) {
         </div>
       </div>
 
-      <BottomNavigation activeTab="settings" onTabChange={onNavigate} />
+      <BottomNavigation />
     </div>
   );
 }

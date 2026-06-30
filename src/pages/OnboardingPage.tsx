@@ -1,18 +1,12 @@
 import { Asset, Button, Text } from "@toss/tds-mobile";
 import { colors } from "@toss/tds-colors";
 import type { CSSProperties } from "react";
+import { useNavigate } from "react-router-dom";
 
 import onboardingHouse from "../assets/onboarding-house.png";
 
-interface OnboardingPageProps {
-  /**
-   * "시작하기" 버튼을 눌렀을 때 실행돼요.
-   * 네비게이션은 이번 작업 범위 밖이라, 기본값은 동작하지 않아요.
-   */
-  onStart?: () => void;
-}
-
-function OnboardingPage({ onStart }: OnboardingPageProps) {
+function OnboardingPage() {
+  const navigate = useNavigate();
   return (
     <div style={containerStyle}>
       <div style={contentStyle}>
@@ -48,7 +42,7 @@ function OnboardingPage({ onStart }: OnboardingPageProps) {
         <Button
           display="full"
           size="xlarge"
-          onClick={onStart}
+          onClick={() => navigate("/home")}
           style={primaryButtonStyle}
         >
           시작하기
