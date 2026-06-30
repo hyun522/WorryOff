@@ -9,6 +9,7 @@ import {
 } from "react-icons/io5";
 import BottomNavigation from "../components/BottomNavigation";
 import PhotoUploadBottomSheet from "../components/PhotoUploadBottomSheet";
+import ProgressCard from "../components/ProgressCard";
 
 interface ChecklistItem {
   id: number;
@@ -132,32 +133,12 @@ function HomePage() {
       {/* Scrollable content */}
       <div style={scrollContentStyle}>
         {/* Progress Card */}
-        <div style={progressCardStyle}>
-          <Text typography="t6" fontWeight="regular" color={colors.grey500}>
-            오늘의 진행 상태
-          </Text>
-          <div>
-            <Text
-              typography="st2"
-              fontWeight="bold"
-              color={colors.grey900}
-              style={{ marginTop: 6, display: "block" }}
-            >
-              {completedCount}{" "}
-              <Text typography="st6" color={colors.grey500}>
-                / {totalCount} 완료
-              </Text>
-            </Text>
-          </div>
-          <div style={progressBarTrackStyle}>
-            <div
-              style={{
-                ...progressBarFillStyle,
-                width: `${progressPercent}%`,
-              }}
-            />
-          </div>
-        </div>
+        <ProgressCard
+          title="오늘의 진행 상태"
+          completedCount={completedCount}
+          totalCount={totalCount}
+          progress={progressPercent}
+        />
 
         {/* Checklist Section */}
         <div style={checklistSectionStyle}>
@@ -198,7 +179,7 @@ function HomePage() {
       </div>
 
       {/* Bottom Area */}
-      <div style={bottomAreaStyle}>
+      <div>
         <div style={ctaWrapperStyle}>
           <Button display="full" size="xlarge" style={primaryButtonStyle}>
             인증하기
@@ -252,28 +233,6 @@ const scrollContentStyle: CSSProperties = {
   display: "flex",
   flexDirection: "column",
   gap: 12,
-};
-
-const progressCardStyle: CSSProperties = {
-  backgroundColor: colors.white,
-  borderRadius: 16,
-  padding: "20px",
-  boxShadow: "0 1px 4px rgba(0, 0, 0, 0.06)",
-};
-
-const progressBarTrackStyle: CSSProperties = {
-  marginTop: 14,
-  height: 8,
-  borderRadius: 100,
-  backgroundColor: colors.grey100,
-  overflow: "hidden",
-};
-
-const progressBarFillStyle: CSSProperties = {
-  height: "100%",
-  borderRadius: 100,
-  backgroundColor: colors.blue500,
-  transition: "width 0.3s ease",
 };
 
 const checklistSectionStyle: CSSProperties = {
@@ -351,10 +310,6 @@ const photoImageStyle: CSSProperties = {
   width: "100%",
   height: "100%",
   objectFit: "cover",
-};
-
-const bottomAreaStyle: CSSProperties = {
-  backgroundColor: colors.white,
 };
 
 const ctaWrapperStyle: CSSProperties = {
