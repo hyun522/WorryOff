@@ -121,7 +121,7 @@ function SettingsPage() {
 
         <div style={{ height: 12 }} />
 
-        <button style={navCardStyle}>
+        <button style={navCardStyle} onClick={() => navigate("/settings/checklist")}>
           <Text typography="t5" fontWeight="regular" color={colors.grey900}>
             체크리스트 지정
           </Text>
