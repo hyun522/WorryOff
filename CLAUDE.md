@@ -164,6 +164,7 @@ Whenever implementing new features:
 - Always preserve existing functionality.
 - Explain major architectural changes before applying them.
 - Never install new dependencies without asking first.
+- Never restore deleted code, styles, or components unless explicitly requested.
 
 ## AI Working Rules
 
