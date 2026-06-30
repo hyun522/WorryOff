@@ -11,6 +11,7 @@ import BottomNavigation from "../components/BottomNavigation";
 import PhotoUploadBottomSheet from "../components/PhotoUploadBottomSheet";
 import ProgressCard from "../components/ProgressCard";
 import CompletedContent from "../components/CompletedContent";
+import CertificationCompleteModal from "../components/CertificationCompleteModal";
 
 interface ChecklistItem {
   id: number;
@@ -90,13 +91,16 @@ function HomePage() {
   );
   const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
+  const [isCertified, setIsCertified] = useState(false);
+  const [certModalVisible, setCertModalVisible] = useState(false);
 
   const completedCount = checklistItems.filter(
     (item) => !!item.photoUrl,
   ).length;
   const totalCount = checklistItems.length;
   const progressPercent = (completedCount / totalCount) * 100;
-  const isCompleted = completedCount === totalCount;
+  const allPhotosAttached = completedCount === totalCount;
+  const isCompleted = isCertified;
 
   function handleThumbnailClick(itemId: number) {
     setSelectedItemId(itemId);
@@ -118,6 +122,21 @@ function HomePage() {
   function handleCloseBottomSheet() {
     setBottomSheetVisible(false);
     setSelectedItemId(null);
+  }
+
+  function handleCertification() {
+    if (allPhotosAttached) {
+      setCertModalVisible(true);
+    }
+  }
+
+  function handleModalClose() {
+    setCertModalVisible(false);
+    setIsCertified(true);
+  }
+
+  function handleViewHistory() {
+    setCertModalVisible(false);
   }
 
   return (
@@ -185,10 +204,26 @@ function HomePage() {
       </div>
 
       {/* Bottom Area */}
-      <div style={bottomAreaStyle}>
+      <div>
         {!isCompleted && (
           <div style={ctaWrapperStyle}>
-            <Button display="full" size="xlarge" style={primaryButtonStyle}>
+            <Button
+              display="full"
+              size="xlarge"
+              disabled={!allPhotosAttached}
+              style={
+                {
+                  "--button-background-color": allPhotosAttached
+                    ? colors.blue500
+                    : colors.grey400,
+                  "--button-color": allPhotosAttached
+                    ? colors.white
+                    : colors.white,
+                  borderRadius: 16,
+                } as CSSProperties
+              }
+              onClick={handleCertification}
+            >
               인증하기
             </Button>
           </div>
@@ -202,6 +237,13 @@ function HomePage() {
         onClose={handleCloseBottomSheet}
         onTakePhoto={handlePhotoSelected}
         onSelectFromAlbum={handlePhotoSelected}
+      />
+
+      {/* Certification Complete Modal */}
+      <CertificationCompleteModal
+        visible={certModalVisible}
+        onViewHistory={handleViewHistory}
+        onClose={handleModalClose}
       />
     </div>
   );
@@ -320,18 +362,8 @@ const photoImageStyle: CSSProperties = {
   objectFit: "cover",
 };
 
-const bottomAreaStyle: CSSProperties = {
-  backgroundColor: colors.white,
-};
-
 const ctaWrapperStyle: CSSProperties = {
   padding: "10px 20px 20px 20px",
 };
-
-const primaryButtonStyle = {
-  "--button-background-color": colors.blue500,
-  "--button-color": colors.white,
-  borderRadius: 16,
-} as CSSProperties;
 
 export default HomePage;
