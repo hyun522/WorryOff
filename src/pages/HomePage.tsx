@@ -2,11 +2,7 @@ import type { CSSProperties } from "react";
 import { useState } from "react";
 import { Button, Text } from "@toss/tds-mobile";
 import { colors } from "@toss/tds-colors";
-import {
-  IoNotificationsOutline,
-  IoCameraOutline,
-  IoCheckmarkCircle,
-} from "react-icons/io5";
+import { IoCameraOutline, IoCheckmarkCircle } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import BottomNavigation from "../components/BottomNavigation";
 import PhotoUploadBottomSheet from "../components/PhotoUploadBottomSheet";
@@ -149,9 +145,6 @@ function HomePage() {
         <Text typography="t2" fontWeight="bold" color={colors.grey900}>
           우리집
         </Text>
-        <button style={iconButtonStyle} aria-label="알림">
-          <IoNotificationsOutline size={24} color={colors.grey600} />
-        </button>
       </div>
 
       {/* Scrollable content */}
@@ -266,17 +259,7 @@ const headerStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  padding: "20px 20px",
-};
-
-const iconButtonStyle: CSSProperties = {
-  background: "none",
-  border: "none",
-  padding: 0,
-  cursor: "pointer",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
+  padding: "24px 24px",
 };
 
 const scrollContentStyle: CSSProperties = {

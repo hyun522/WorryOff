@@ -17,10 +17,14 @@ function SpaceNamePage() {
     <div style={containerStyle}>
       {/* Header */}
       <div style={headerStyle}>
-        <button style={backButtonStyle} onClick={() => navigate("/settings")} aria-label="뒤로가기">
+        <button
+          style={backButtonStyle}
+          onClick={() => navigate("/settings")}
+          aria-label="뒤로가기"
+        >
           <IoChevronBack size={24} color={colors.grey900} />
         </button>
-        <Text typography="t4" fontWeight="bold" color={colors.grey900}>
+        <Text typography="t3" fontWeight="bold" color={colors.grey900}>
           공간 이름 설정
         </Text>
         <div style={headerPlaceholderStyle} />
@@ -30,20 +34,18 @@ function SpaceNamePage() {
       <div style={scrollContentStyle}>
         {/* 집 일러스트 */}
         <div style={illustrationWrapStyle}>
-          <img
-            src={settingHouse}
-            alt="집 일러스트"
-            style={illustrationStyle}
-          />
+          <img src={settingHouse} alt="집 일러스트" style={illustrationStyle} />
         </div>
 
         {/* 안내 텍스트 */}
         <div style={descriptionWrapStyle}>
-          <Text typography="t2" fontWeight="bold" color={colors.grey900} style={{ textAlign: "center", display: "block" }}>
-            공간의 이름을
-          </Text>
-          <Text typography="t2" fontWeight="bold" color={colors.grey900} style={{ textAlign: "center", display: "block" }}>
-            설정해주세요
+          <Text
+            typography="t2"
+            fontWeight="bold"
+            color={colors.grey900}
+            style={{ textAlign: "center", display: "block" }}
+          >
+            공간의 이름을 설정해주세요
           </Text>
           <Text
             typography="t5"
@@ -140,7 +142,7 @@ const headerStyle: CSSProperties = {
   flexDirection: "row",
   alignItems: "center",
   justifyContent: "space-between",
-  padding: "16px 20px",
+  padding: "24px 24px",
   flexShrink: 0,
 };
 

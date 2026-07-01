@@ -13,7 +13,6 @@ interface HistoryRecord {
   photos: (string | null)[];
 }
 
-
 const mockRecords: HistoryRecord[] = [
   {
     id: 1,
@@ -239,7 +238,7 @@ const containerStyle: CSSProperties = {
 const headerStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
-  padding: "20px 20px",
+  padding: "24px 24px",
   flexShrink: 0,
 };
 
