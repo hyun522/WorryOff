@@ -4,6 +4,21 @@ import { colors } from "@toss/tds-colors";
 import { IoChevronBack, IoReorderThreeOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import BottomNavigation from "../components/BottomNavigation";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  verticalListSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface ChecklistItem {
   id: number;
@@ -31,6 +46,15 @@ function SwipeableItem({
   const startTranslateXRef = useRef(0);
   const hasDraggedRef = useRef(false);
   const cardRef = useRef<HTMLDivElement>(null);
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: item.id });
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     startXRef.current = e.clientX;
@@ -63,7 +87,16 @@ function SwipeableItem({
   };
 
   return (
-    <div style={swipeWrapperStyle}>
+    <div
+      ref={setNodeRef}
+      style={{
+        ...swipeWrapperStyle,
+        transform: CSS.Transform.toString(transform),
+        transition,
+        zIndex: isDragging ? 2 : undefined,
+        opacity: isDragging ? 0.85 : 1,
+      }}
+    >
       {/* Delete area — behind the card */}
       <div
         style={deleteAreaStyle}
@@ -94,7 +127,18 @@ function SwipeableItem({
             {item.label}
           </Text>
         </div>
-        <IoReorderThreeOutline size={22} color={colors.grey400} />
+        <div
+          {...listeners}
+          {...attributes}
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            listeners?.onPointerDown?.(e);
+          }}
+          style={dragHandleStyle}
+          aria-label="순서 변경"
+        >
+          <IoReorderThreeOutline size={22} color={colors.grey400} />
+        </div>
       </div>
     </div>
   );
@@ -104,8 +148,25 @@ function ChecklistPage() {
   const navigate = useNavigate();
   const [items, setItems] = useState<ChecklistItem[]>(mockItems);
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 4 },
+    })
+  );
+
   const handleDelete = (id: number) => {
     setItems((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      setItems((prev) => {
+        const oldIndex = prev.findIndex((item) => item.id === active.id);
+        const newIndex = prev.findIndex((item) => item.id === over.id);
+        return arrayMove(prev, oldIndex, newIndex);
+      });
+    }
   };
 
   return (
@@ -119,7 +180,7 @@ function ChecklistPage() {
         >
           <IoChevronBack size={24} color={colors.grey900} />
         </button>
-        <Text typography="t4" fontWeight="bold" color={colors.grey900}>
+        <Text typography="t3" fontWeight="bold" color={colors.grey900}>
           체크리스트 항목
         </Text>
         <div style={headerPlaceholderStyle} />
@@ -136,11 +197,26 @@ function ChecklistPage() {
           체크리스트 항목을 관리하고 순서를 변경할 수 있어요.
         </Text>
 
-        <div style={listStyle}>
-          {items.map((item) => (
-            <SwipeableItem key={item.id} item={item} onDelete={handleDelete} />
-          ))}
-        </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={items.map((item) => item.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div style={listStyle}>
+              {items.map((item) => (
+                <SwipeableItem
+                  key={item.id}
+                  item={item}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
 
         {/* Add item button */}
         <button style={addButtonStyle}>
@@ -170,7 +246,7 @@ const headerStyle: CSSProperties = {
   flexDirection: "row",
   alignItems: "center",
   justifyContent: "space-between",
-  padding: "16px 20px",
+  padding: "24px 24px",
   flexShrink: 0,
   backgroundColor: colors.grey50,
 };
@@ -222,6 +298,14 @@ const deleteAreaStyle: CSSProperties = {
   alignItems: "center",
   justifyContent: "center",
   cursor: "pointer",
+};
+
+const dragHandleStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  touchAction: "none",
+  cursor: "grab",
 };
 
 const cardStyle: CSSProperties = {
