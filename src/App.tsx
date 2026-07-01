@@ -5,6 +5,7 @@ import HistoryPage from "./pages/HistoryPage";
 import SettingsPage from "./pages/SettingsPage";
 import SpaceNamePage from "./pages/SpaceNamePage";
 import ChecklistPage from "./pages/ChecklistPage";
+import AddChecklistItemPage from "./pages/AddChecklistItemPage";
 import "./App.css";
 
 function App() {
@@ -18,6 +19,10 @@ function App() {
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/settings/space-name" element={<SpaceNamePage />} />
         <Route path="/settings/checklist" element={<ChecklistPage />} />
+        <Route
+          path="/settings/checklist/add"
+          element={<AddChecklistItemPage />}
+        />
       </Routes>
     </BrowserRouter>
   );
