@@ -61,7 +61,7 @@ function SpaceNamePage() {
         <div style={inputSectionStyle}>
           <Text
             typography="t6"
-            fontWeight="regular"
+            fontWeight="bold"
             color={colors.grey700}
             style={{ display: "block", marginBottom: 10 }}
           >
@@ -91,15 +91,17 @@ function SpaceNamePage() {
               </button>
             )}
           </div>
-
-          <Text
-            typography="t7"
-            fontWeight="regular"
-            color={colors.grey400}
-            style={{ display: "block", textAlign: "right", marginTop: 8 }}
+          <div
+            style={{
+              marginTop: 3,
+              width: "100%",
+              textAlign: "right",
+            }}
           >
-            {value.length}/{MAX_LENGTH}
-          </Text>
+            <Text typography="t7" fontWeight="regular" color={colors.grey400}>
+              {value.length}/{MAX_LENGTH}
+            </Text>
+          </div>
         </div>
       </div>
 
