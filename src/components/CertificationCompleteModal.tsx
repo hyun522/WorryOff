@@ -1,24 +1,13 @@
 import type { CSSProperties } from "react";
 import { Text } from "@toss/tds-mobile";
 import { colors } from "@toss/tds-colors";
+import homeCompletedContent from "../assets/home-completed-content.png";
 
 interface CertificationCompleteModalProps {
   visible: boolean;
   onViewHistory: () => void;
   onClose: () => void;
 }
-
-const confettiItems = [
-  { color: "#F04E37", size: 11, top: 8, left: 52 },
-  { color: "#FF9500", size: 9, top: 52, left: 26 },
-  { color: "#34C759", size: 10, top: 88, left: 14 },
-  { color: "#5AC8FA", size: 8, top: 12, left: 163 },
-  { color: "#34C759", size: 10, top: 6, left: 212 },
-  { color: "#FF9500", size: 9, top: 48, left: 234 },
-  { color: "#FF6B35", size: 9, top: 70, left: 248 },
-  { color: "#AF52DE", size: 9, top: 90, left: 245 },
-  { color: "#007AFF", size: 8, top: 104, left: 234 },
-];
 
 function CertificationCompleteModal({
   visible,
@@ -30,34 +19,13 @@ function CertificationCompleteModal({
   return (
     <div style={overlayStyle}>
       <div style={modalStyle}>
-        {/* Illustration: confetti + success circle */}
+        {/* Illustration */}
         <div style={illustrationAreaStyle}>
-          {confettiItems.map((item, i) => (
-            <div
-              key={i}
-              style={{
-                position: "absolute",
-                width: item.size,
-                height: item.size,
-                backgroundColor: item.color,
-                top: item.top,
-                left: item.left,
-                transform: "rotate(45deg)",
-                borderRadius: 2,
-              }}
-            />
-          ))}
-          <div style={successCircleStyle}>
-            <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
-              <path
-                d="M8 19L15.5 27L30 11"
-                stroke="white"
-                strokeWidth="3.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
+          <img
+            src={homeCompletedContent}
+            alt="인증 완료"
+            style={illustrationImageStyle}
+          />
         </div>
 
         {/* Title */}
@@ -133,14 +101,10 @@ const illustrationAreaStyle: CSSProperties = {
   justifyContent: "center",
 };
 
-const successCircleStyle: CSSProperties = {
-  width: 80,
-  height: 80,
-  borderRadius: "50%",
-  backgroundColor: "#34C759",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
+const illustrationImageStyle: CSSProperties = {
+  height: 200,
+  width: "auto",
+  objectFit: "contain",
 };
 
 const titleContainerStyle: CSSProperties = {
