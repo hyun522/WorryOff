@@ -10,11 +10,23 @@ type DropdownType = "ampm" | "hour" | "minute" | null;
 
 const DAYS: DayKey[] = ["월", "화", "수", "목", "금", "토", "일"];
 const AMPM_OPTIONS = ["오전", "오후"];
-const HOUR_OPTIONS = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, "0"));
+const HOUR_OPTIONS = Array.from({ length: 12 }, (_, i) =>
+  String(i + 1).padStart(2, "0"),
+);
 const MINUTE_OPTIONS = [
-  "00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55",
+  "00",
+  "05",
+  "10",
+  "15",
+  "20",
+  "25",
+  "30",
+  "35",
+  "40",
+  "45",
+  "50",
+  "55",
 ];
-
 
 interface DropdownProps {
   value: string;
@@ -24,7 +36,13 @@ interface DropdownProps {
   onSelect: (value: string) => void;
 }
 
-function Dropdown({ value, options, isOpen, onToggle, onSelect }: DropdownProps) {
+function Dropdown({
+  value,
+  options,
+  isOpen,
+  onToggle,
+  onSelect,
+}: DropdownProps) {
   return (
     <div style={{ ...dropdownWrapStyle, zIndex: isOpen ? 10 : 1 }}>
       <button
@@ -76,7 +94,7 @@ function SettingsPage() {
 
   const toggleDay = (day: DayKey) => {
     setSelectedDays((prev) =>
-      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day],
     );
   };
 
@@ -84,7 +102,10 @@ function SettingsPage() {
     setOpenDropdown((prev) => (prev === type ? null : type));
   };
 
-  const handleDropdownSelect = (type: NonNullable<DropdownType>, value: string) => {
+  const handleDropdownSelect = (
+    type: NonNullable<DropdownType>,
+    value: string,
+  ) => {
     if (type === "ampm") setAmpm(value);
     else if (type === "hour") setHour(value);
     else if (type === "minute") setMinute(value);
@@ -112,7 +133,10 @@ function SettingsPage() {
           공간 이름 설정
         </Text>
 
-        <button style={navCardStyle} onClick={() => navigate("/settings/space-name")}>
+        <button
+          style={navCardStyle}
+          onClick={() => navigate("/settings/space-name")}
+        >
           <Text typography="t5" fontWeight="regular" color={colors.grey900}>
             우리집
           </Text>
@@ -121,7 +145,10 @@ function SettingsPage() {
 
         <div style={{ height: 12 }} />
 
-        <button style={navCardStyle} onClick={() => navigate("/settings/checklist")}>
+        <button
+          style={navCardStyle}
+          onClick={() => navigate("/settings/checklist")}
+        >
           <Text typography="t5" fontWeight="regular" color={colors.grey900}>
             체크리스트 지정
           </Text>
@@ -243,7 +270,7 @@ const headerStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  padding: "20px 0 16px",
+  padding: "20px 0 20px",
   flexShrink: 0,
 };
 
