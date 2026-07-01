@@ -219,7 +219,10 @@ function ChecklistPage() {
         </DndContext>
 
         {/* Add item button */}
-        <button style={addButtonStyle}>
+        <button
+          style={addButtonStyle}
+          onClick={() => navigate("/settings/checklist/add")}
+        >
           <Text typography="t5" fontWeight="regular" color={colors.blue500}>
             + 항목 추가
           </Text>
