@@ -36,7 +36,7 @@ type Store = AppState & AppActions;
 
 export const useAppStore = create<Store>()(
   persist(
-    (): Store => ({
+    (set): Store => ({
       hasCompletedOnboarding: false,
 
       current: {
@@ -50,14 +50,34 @@ export const useAppStore = create<Store>()(
 
       history: [],
 
-      addChecklist: () => {
-        // TODO
+      addChecklist: (title) => {
+        set((state) => ({
+          current: {
+            ...state.current,
+            checklist: [
+              ...state.current.checklist,
+              { id: crypto.randomUUID(), title, imageUri: null },
+            ],
+          },
+        }));
       },
-      deleteChecklist: () => {
-        // TODO
+      deleteChecklist: (id) => {
+        set((state) => ({
+          current: {
+            ...state.current,
+            checklist: state.current.checklist.filter(
+              (item) => item.id !== id,
+            ),
+          },
+        }));
       },
-      reorderChecklist: () => {
-        // TODO
+      reorderChecklist: (newChecklist) => {
+        set((state) => ({
+          current: {
+            ...state.current,
+            checklist: newChecklist,
+          },
+        }));
       },
       updateChecklistImage: () => {
         // TODO
