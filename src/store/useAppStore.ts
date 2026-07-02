@@ -25,7 +25,7 @@ interface AppActions {
   addChecklist(title: string): void;
   deleteChecklist(id: string): void;
   reorderChecklist(newChecklist: ChecklistItem[]): void;
-  updateChecklistImage(id: string, imageUri: string | null): void;
+  updateChecklistImage(id: string, imageUri: string): void;
   updateSpaceName(spaceName: string): void;
   updateSettings(settings: Settings): void;
   completeToday(): void;
@@ -79,8 +79,15 @@ export const useAppStore = create<Store>()(
           },
         }));
       },
-      updateChecklistImage: () => {
-        // TODO
+      updateChecklistImage: (id, imageUri) => {
+        set((state) => ({
+          current: {
+            ...state.current,
+            checklist: state.current.checklist.map((item) =>
+              item.id === id ? { ...item, imageUri } : item,
+            ),
+          },
+        }));
       },
       updateSpaceName: (spaceName) => {
         set((state) => ({
