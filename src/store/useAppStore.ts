@@ -1,6 +1,11 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { AppStore as AppState, ChecklistItem, Settings } from "./types";
+import type {
+  AppStore as AppState,
+  ChecklistItem,
+  HistoryRecord,
+  Settings,
+} from "./types";
 import {
   DEFAULT_CHECKLIST,
   DEFAULT_SETTINGS,
@@ -50,6 +55,7 @@ export const useAppStore = create<Store>()(
 
       history: [],
 
+      // 새 ChecklistItem을 current.checklist 맨 뒤에 추가 (imageUri는 null로 시작)
       addChecklist: (title) => {
         set((state) => ({
           current: {
@@ -61,6 +67,7 @@ export const useAppStore = create<Store>()(
           },
         }));
       },
+      // id가 일치하는 ChecklistItem만 current.checklist에서 제거 (History는 건드리지 않음)
       deleteChecklist: (id) => {
         set((state) => ({
           current: {
@@ -71,6 +78,7 @@ export const useAppStore = create<Store>()(
           },
         }));
       },
+      // dnd-kit이 계산한 최종 배열을 그대로 저장 (순서 재계산 없음)
       reorderChecklist: (newChecklist) => {
         set((state) => ({
           current: {
@@ -79,6 +87,7 @@ export const useAppStore = create<Store>()(
           },
         }));
       },
+      // id가 일치하는 ChecklistItem의 imageUri만 등록/교체 (삭제는 지원하지 않음, title/id는 불변)
       updateChecklistImage: (id, imageUri) => {
         set((state) => ({
           current: {
@@ -89,6 +98,7 @@ export const useAppStore = create<Store>()(
           },
         }));
       },
+      // current.spaceName만 교체, current의 다른 필드는 유지
       updateSpaceName: (spaceName) => {
         set((state) => ({
           current: {
@@ -97,6 +107,7 @@ export const useAppStore = create<Store>()(
           },
         }));
       },
+      // current.settings를 통째로 교체 (부분 병합 아님, 새 Settings 객체 전체를 그대로 대입)
       updateSettings: (settings) => {
         set((state) => ({
           current: {
@@ -105,9 +116,32 @@ export const useAppStore = create<Store>()(
           },
         }));
       },
+      // 오늘 인증 완료 처리: current.isTodayCompleted/completedAt 갱신 + current를
+      // Deep Copy한 HistoryRecord를 생성해 history 맨 앞(최신순)에 추가
       completeToday: () => {
-        // TODO
+        const completedAt = new Date().toISOString();
+
+        set((state) => {
+          const newHistory: HistoryRecord = {
+            id: crypto.randomUUID(),
+            date: state.current.lastActiveDate,
+            completedAt,
+            status: "completed",
+            checklist: state.current.checklist.map((item) => ({ ...item })),
+          };
+
+          return {
+            current: {
+              ...state.current,
+              isTodayCompleted: true,
+              completedAt,
+            },
+            history: [newHistory, ...state.history],
+          };
+        });
       },
+      // (미구현) 날짜가 바뀌었는지 확인해 isTodayCompleted/checklist 초기화,
+      // 오래된 History 정리 등을 처리할 예정 — utils.ts의 isNewDay/isNewMonth 사용 예정
       checkDateChange: () => {
         // TODO
       },
