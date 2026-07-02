@@ -82,11 +82,21 @@ export const useAppStore = create<Store>()(
       updateChecklistImage: () => {
         // TODO
       },
-      updateSpaceName: () => {
-        // TODO
+      updateSpaceName: (spaceName) => {
+        set((state) => ({
+          current: {
+            ...state.current,
+            spaceName,
+          },
+        }));
       },
-      updateSettings: () => {
-        // TODO
+      updateSettings: (settings) => {
+        set((state) => ({
+          current: {
+            ...state.current,
+            settings,
+          },
+        }));
       },
       completeToday: () => {
         // TODO
