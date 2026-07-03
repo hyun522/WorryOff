@@ -11,7 +11,7 @@ import {
   DEFAULT_SETTINGS,
   DEFAULT_SPACE_NAME,
 } from "./constants";
-import { formatDate } from "./utils";
+import { formatDate, isNewDay, isNewMonth } from "./utils";
 
 /**
  * Worry OFF Global Store
@@ -140,10 +140,48 @@ export const useAppStore = create<Store>()(
           };
         });
       },
-      // (미구현) 날짜가 바뀌었는지 확인해 isTodayCompleted/checklist 초기화,
-      // 오래된 History 정리 등을 처리할 예정 — utils.ts의 isNewDay/isNewMonth 사용 예정
+      // 날짜가 바뀌었으면: 지난 하루를 History로 스냅샷 저장하고,
+      // 월이 바뀌었으면 지난 달 History를 전부 삭제한 뒤, Current(사진/인증 상태)를 초기화
       checkDateChange: () => {
-        // TODO
+        const today = formatDate(new Date());
+
+        set((state) => {
+          // 날짜가 바뀌지 않았다면 아무 작업도 하지 않음
+          if (!isNewDay(state.current.lastActiveDate, today)) {
+            return state;
+          }
+
+          const newHistory: HistoryRecord = {
+            id: crypto.randomUUID(),
+            date: state.current.lastActiveDate,
+            completedAt: state.current.isTodayCompleted
+              ? state.current.completedAt
+              : null,
+            status: state.current.isTodayCompleted
+              ? "completed"
+              : "incomplete",
+            checklist: state.current.checklist.map((item) => ({ ...item })),
+          };
+
+          const history = [newHistory, ...state.history];
+
+          // 월이 바뀌었다면 이전 달 History(방금 만든 기록 포함)를 모두 삭제
+          const monthChanged = isNewMonth(state.current.lastActiveDate, today);
+
+          return {
+            current: {
+              ...state.current,
+              checklist: state.current.checklist.map((item) => ({
+                ...item,
+                imageUri: null,
+              })),
+              isTodayCompleted: false,
+              completedAt: null,
+              lastActiveDate: today,
+            },
+            history: monthChanged ? [] : history,
+          };
+        });
       },
     }),
     {
