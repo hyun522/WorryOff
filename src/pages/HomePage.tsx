@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Text } from "@toss/tds-mobile";
 import { colors } from "@toss/tds-colors";
 import { IoCameraOutline, IoCheckmarkCircle } from "react-icons/io5";
@@ -9,19 +9,7 @@ import PhotoUploadBottomSheet from "../components/PhotoUploadBottomSheet";
 import ProgressCard from "../components/ProgressCard";
 import CompletedContent from "../components/CompletedContent";
 import CertificationCompleteModal from "../components/CertificationCompleteModal";
-
-interface ChecklistItem {
-  id: number;
-  label: string;
-  photoUrl?: string;
-}
-
-const initialChecklistItems: ChecklistItem[] = [
-  { id: 1, label: "가스 밸브 잠그기", photoUrl: "mock" },
-  { id: 2, label: "창문 잠그기", photoUrl: "mock" },
-  { id: 3, label: "전기 제품 끄기" },
-  { id: 4, label: "현관 문 잠금", photoUrl: "mock" },
-];
+import { useAppStore } from "../store/useAppStore";
 
 function CheckCircleIcon({ completed }: { completed: boolean }) {
   if (completed) {
@@ -46,7 +34,7 @@ function PhotoThumbnail({
   photoUrl,
   onClick,
 }: {
-  photoUrl?: string;
+  photoUrl: string | null;
   onClick: () => void;
 }) {
   if (photoUrl && photoUrl !== "mock") {
@@ -84,34 +72,38 @@ function PhotoThumbnail({
 
 function HomePage() {
   const navigate = useNavigate();
-  const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>(
-    initialChecklistItems,
+  const checklist = useAppStore((state) => state.current.checklist);
+  const isTodayCompleted = useAppStore(
+    (state) => state.current.isTodayCompleted,
   );
+  const updateChecklistImage = useAppStore(
+    (state) => state.updateChecklistImage,
+  );
+  const completeToday = useAppStore((state) => state.completeToday);
+  const checkDateChange = useAppStore((state) => state.checkDateChange);
+
   const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
-  const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
-  const [isCertified, setIsCertified] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [certModalVisible, setCertModalVisible] = useState(false);
 
-  const completedCount = checklistItems.filter(
-    (item) => !!item.photoUrl,
-  ).length;
-  const totalCount = checklistItems.length;
+  useEffect(() => {
+    checkDateChange();
+  }, [checkDateChange]);
+
+  const completedCount = checklist.filter((item) => !!item.imageUri).length;
+  const totalCount = checklist.length;
   const progressPercent = (completedCount / totalCount) * 100;
   const allPhotosAttached = completedCount === totalCount;
-  const isCompleted = isCertified;
+  const isCompleted = isTodayCompleted;
 
-  function handleThumbnailClick(itemId: number) {
+  function handleThumbnailClick(itemId: string) {
     setSelectedItemId(itemId);
     setBottomSheetVisible(true);
   }
 
   function handlePhotoSelected() {
     if (selectedItemId !== null) {
-      setChecklistItems((prev) =>
-        prev.map((item) =>
-          item.id === selectedItemId ? { ...item, photoUrl: "mock" } : item,
-        ),
-      );
+      updateChecklistImage(selectedItemId, "mock");
     }
     setBottomSheetVisible(false);
     setSelectedItemId(null);
@@ -130,7 +122,7 @@ function HomePage() {
 
   function handleModalClose() {
     setCertModalVisible(false);
-    setIsCertified(true);
+    completeToday();
   }
 
   function handleViewHistory() {
@@ -169,8 +161,8 @@ function HomePage() {
             </div>
 
             <div style={checklistListStyle}>
-              {checklistItems.map((item, index) => {
-                const completed = !!item.photoUrl;
+              {checklist.map((item, index) => {
+                const completed = !!item.imageUri;
                 return (
                   <div key={item.id}>
                     <div style={checklistItemStyle}>
@@ -181,14 +173,14 @@ function HomePage() {
                         color={completed ? colors.grey900 : colors.grey500}
                         style={{ flex: 1, marginLeft: 12 }}
                       >
-                        {item.label}
+                        {item.title}
                       </Text>
                       <PhotoThumbnail
-                        photoUrl={item.photoUrl}
+                        photoUrl={item.imageUri}
                         onClick={() => handleThumbnailClick(item.id)}
                       />
                     </div>
-                    {index < checklistItems.length - 1 && (
+                    {index < checklist.length - 1 && (
                       <div style={dividerStyle} />
                     )}
                   </div>
