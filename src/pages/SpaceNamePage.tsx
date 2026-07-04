@@ -4,14 +4,22 @@ import { colors } from "@toss/tds-colors";
 import { IoChevronBack, IoClose } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import settingHouse from "../assets/setting-house.png";
+import { useAppStore } from "../store/useAppStore";
 
 const MAX_LENGTH = 20;
 
 function SpaceNamePage() {
   const navigate = useNavigate();
-  const [value, setValue] = useState("우리집");
+  const spaceName = useAppStore((state) => state.current.spaceName);
+  const updateSpaceName = useAppStore((state) => state.updateSpaceName);
+  const [value, setValue] = useState(spaceName);
 
   const hasValue = value.length > 0;
+
+  function handleSave() {
+    updateSpaceName(value);
+    navigate("/settings");
+  }
 
   return (
     <div style={containerStyle}>
@@ -120,7 +128,7 @@ function SpaceNamePage() {
               borderRadius: 16,
             } as CSSProperties
           }
-          onClick={() => navigate("/settings")}
+          onClick={handleSave}
         >
           저장
         </Button>
