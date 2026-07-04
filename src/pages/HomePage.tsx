@@ -72,6 +72,7 @@ function PhotoThumbnail({
 
 function HomePage() {
   const navigate = useNavigate();
+  const spaceName = useAppStore((state) => state.current.spaceName);
   const checklist = useAppStore((state) => state.current.checklist);
   const isTodayCompleted = useAppStore(
     (state) => state.current.isTodayCompleted,
@@ -135,7 +136,7 @@ function HomePage() {
       {/* Header */}
       <div style={headerStyle}>
         <Text typography="t2" fontWeight="bold" color={colors.grey900}>
-          우리집
+          {spaceName}
         </Text>
       </div>
 
