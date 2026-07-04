@@ -117,17 +117,18 @@ function HomePage() {
 
   function handleCertification() {
     if (allPhotosAttached) {
+      completeToday();
       setCertModalVisible(true);
     }
   }
 
   function handleModalClose() {
     setCertModalVisible(false);
-    completeToday();
   }
 
   function handleViewHistory() {
     setCertModalVisible(false);
+
     navigate("/history");
   }
 

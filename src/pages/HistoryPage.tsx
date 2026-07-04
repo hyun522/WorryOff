@@ -85,6 +85,7 @@ function PhotoThumbnail({ photoUrl }: { photoUrl: string | null }) {
       </div>
     );
   }
+
   return (
     <div style={photoThumbnailStyle}>
       <img src={photoUrl} alt="인증 사진" style={photoImageStyle} />
