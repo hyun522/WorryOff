@@ -19,17 +19,8 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-
-interface ChecklistItem {
-  id: number;
-  label: string;
-}
-
-const mockItems: ChecklistItem[] = [
-  { id: 1, label: "가스 밸브 잠그기" },
-  { id: 2, label: "창문 잠그기" },
-  { id: 3, label: "전기 제품 끄기" },
-];
+import { useAppStore } from "../store/useAppStore";
+import type { ChecklistItem } from "../store/types";
 
 const DELETE_WIDTH = 80;
 
@@ -38,7 +29,7 @@ function SwipeableItem({
   onDelete,
 }: {
   item: ChecklistItem;
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
 }) {
   const [translateX, setTranslateX] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -124,7 +115,7 @@ function SwipeableItem({
       >
         <div style={{ flex: 1 }}>
           <Text typography="t5" fontWeight="regular" color={colors.grey900}>
-            {item.label}
+            {item.title}
           </Text>
         </div>
         <div
@@ -146,26 +137,26 @@ function SwipeableItem({
 
 function ChecklistPage() {
   const navigate = useNavigate();
-  const [items, setItems] = useState<ChecklistItem[]>(mockItems);
+  const items = useAppStore((state) => state.current.checklist);
+  const deleteChecklist = useAppStore((state) => state.deleteChecklist);
+  const reorderChecklist = useAppStore((state) => state.reorderChecklist);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 4 },
-    })
+    }),
   );
 
-  const handleDelete = (id: number) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
+  const handleDelete = (id: string) => {
+    deleteChecklist(id);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
-      setItems((prev) => {
-        const oldIndex = prev.findIndex((item) => item.id === active.id);
-        const newIndex = prev.findIndex((item) => item.id === over.id);
-        return arrayMove(prev, oldIndex, newIndex);
-      });
+      const oldIndex = items.findIndex((item) => item.id === active.id);
+      const newIndex = items.findIndex((item) => item.id === over.id);
+      reorderChecklist(arrayMove(items, oldIndex, newIndex));
     }
   };
 
