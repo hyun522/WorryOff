@@ -4,14 +4,21 @@ import { colors } from "@toss/tds-colors";
 import { IoChevronBack } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import addChecklistDocument from "../assets/add-checklist-add-document.png";
+import { useAppStore } from "../store/useAppStore";
 
 const MAX_LENGTH = 20;
 
 function AddChecklistItemPage() {
   const navigate = useNavigate();
+  const addChecklist = useAppStore((state) => state.addChecklist);
   const [value, setValue] = useState("");
 
   const hasValue = value.length > 0;
+
+  function handleAdd() {
+    addChecklist(value);
+    navigate("/settings/checklist");
+  }
 
   return (
     <div style={containerStyle}>
@@ -119,7 +126,7 @@ function AddChecklistItemPage() {
               borderRadius: 16,
             } as CSSProperties
           }
-          onClick={() => navigate("/settings/checklist")}
+          onClick={handleAdd}
         >
           추가
         </Button>
