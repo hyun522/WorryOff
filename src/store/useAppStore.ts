@@ -27,6 +27,7 @@ import { formatDate, isNewDay, isNewMonth } from "./utils";
  */
 
 interface AppActions {
+  completeOnboarding(): void;
   addChecklist(title: string): void;
   deleteChecklist(id: string): void;
   reorderChecklist(newChecklist: ChecklistItem[]): void;
@@ -55,6 +56,10 @@ export const useAppStore = create<Store>()(
 
       history: [],
 
+      // 온보딩 완료 처리: hasCompletedOnboarding만 true로 변경
+      completeOnboarding: () => {
+        set(() => ({ hasCompletedOnboarding: true }));
+      },
       // 새 ChecklistItem을 current.checklist 맨 뒤에 추가 (imageUri는 null로 시작)
       addChecklist: (title) => {
         set((state) => ({
@@ -67,14 +72,13 @@ export const useAppStore = create<Store>()(
           },
         }));
       },
+
       // id가 일치하는 ChecklistItem만 current.checklist에서 제거 (History는 건드리지 않음)
       deleteChecklist: (id) => {
         set((state) => ({
           current: {
             ...state.current,
-            checklist: state.current.checklist.filter(
-              (item) => item.id !== id,
-            ),
+            checklist: state.current.checklist.filter((item) => item.id !== id),
           },
         }));
       },
@@ -157,9 +161,7 @@ export const useAppStore = create<Store>()(
             completedAt: state.current.isTodayCompleted
               ? state.current.completedAt
               : null,
-            status: state.current.isTodayCompleted
-              ? "completed"
-              : "incomplete",
+            status: state.current.isTodayCompleted ? "completed" : "incomplete",
             checklist: state.current.checklist.map((item) => ({ ...item })),
           };
 

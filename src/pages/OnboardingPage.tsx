@@ -4,9 +4,17 @@ import type { CSSProperties } from "react";
 import { useNavigate } from "react-router-dom";
 
 import onboardingHouse from "../assets/onboarding-house.png";
+import { useAppStore } from "../store/useAppStore";
 
 function OnboardingPage() {
   const navigate = useNavigate();
+  const completeOnboarding = useAppStore((state) => state.completeOnboarding);
+
+  function handleStart() {
+    completeOnboarding();
+    navigate("/home");
+  }
+
   return (
     <div style={containerStyle}>
       <div style={contentStyle}>
@@ -42,7 +50,7 @@ function OnboardingPage() {
         <Button
           display="full"
           size="xlarge"
-          onClick={() => navigate("/home")}
+          onClick={handleStart}
           style={primaryButtonStyle}
         >
           시작하기
