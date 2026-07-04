@@ -4,81 +4,69 @@ import { colors } from "@toss/tds-colors";
 import { IoCameraOutline } from "react-icons/io5";
 import { FaCheckCircle } from "react-icons/fa";
 import BottomNavigation from "../components/BottomNavigation";
+import { useAppStore } from "../store/useAppStore";
+import type { HistoryRecord } from "../store/types";
 
-interface HistoryRecord {
-  id: number;
+// 화면 렌더링 전용 표시 형태 (store의 HistoryRecord를 사람이 읽는 문자열로 변환한 결과)
+interface DisplayRecord {
+  id: string;
   date: string;
   time: string | null;
   isCompleted: boolean;
   photos: (string | null)[];
 }
 
-const mockRecords: HistoryRecord[] = [
-  {
-    id: 1,
-    date: "2026.06.29 (일)",
-    time: "오전 08:42",
-    isCompleted: true,
-    photos: [
-      "https://picsum.photos/seed/wr1/120/120",
-      "https://picsum.photos/seed/wr2/120/120",
-      "https://picsum.photos/seed/wr3/120/120",
-      "https://picsum.photos/seed/wr4/120/120",
-      "https://picsum.photos/seed/wr5/120/120",
-    ],
-  },
-  {
-    id: 2,
-    date: "2026.06.28 (토)",
-    time: "오전 08:31",
-    isCompleted: true,
-    photos: [
-      "https://picsum.photos/seed/wr6/120/120",
-      "https://picsum.photos/seed/wr7/120/120",
-      "https://picsum.photos/seed/wr8/120/120",
-    ],
-  },
-  {
-    id: 3,
-    date: "2026.06.27 (금)",
-    time: "오전 08:28",
-    isCompleted: true,
-    photos: [
-      "https://picsum.photos/seed/wr9/120/120",
-      "https://picsum.photos/seed/wr10/120/120",
-    ],
-  },
-  {
-    id: 4,
-    date: "2026.06.01 (월)",
-    time: null,
-    isCompleted: false,
-    photos: [null, null],
-  },
-  // 한 달 이전 기록 — isWithinLastMonth 필터에 의해 표시되지 않음
-  {
-    id: 5,
-    date: "2026.05.20 (수)",
-    time: "오전 09:15",
-    isCompleted: true,
-    photos: ["https://picsum.photos/seed/wr11/120/120"],
-  },
-];
+const DAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
 
-const mockStats = {
-  streakDays: 7,
-  monthTotal: 22,
-  monthCompleted: 20,
-};
+// "YYYY-MM-DD" -> "2026.06.29 (일)"
+function formatDisplayDate(date: string): string {
+  const [year, month, day] = date.split("-");
+  const dateObj = new Date(Number(year), Number(month) - 1, Number(day));
+  return `${year}.${month}.${day} (${DAY_LABELS[dateObj.getDay()]})`;
+}
 
-function isWithinLastMonth(dateStr: string): boolean {
-  const match = dateStr.match(/(\d{4})\.(\d{2})\.(\d{2})/);
-  if (!match) return false;
-  const [, year, month, day] = match;
-  const recordDate = new Date(Number(year), Number(month) - 1, Number(day));
-  const oneMonthAgo = new Date();
-  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-  return recordDate >= oneMonthAgo;
+// ISO 8601 completedAt -> "오전 08:42" (미인증이면 null)
+function formatDisplayTime(completedAt: string | null): string | null {
+  if (!completedAt) return null;
+  const d = new Date(completedAt);
+  const hour24 = d.getHours();
+  const ampm = hour24 < 12 ? "오전" : "오후";
+  const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
+  const minute = String(d.getMinutes()).padStart(2, "0");
+  return `${ampm} ${String(hour12).padStart(2, "0")}:${minute}`;
+}
+
+// 두 "YYYY-MM-DD"가 정확히 하루 차이인지 확인 (streak 계산용)
+function isConsecutiveDay(earlierDate: string, laterDate: string): boolean {
+  const [ey, em, ed] = earlierDate.split("-").map(Number);
+  const [ly, lm, ld] = laterDate.split("-").map(Number);
+  const earlier = new Date(ey, em - 1, ed);
+  const later = new Date(ly, lm - 1, ld);
+  const diffDays = Math.round((later.getTime() - earlier.getTime()) / 86400000);
+  return diffDays === 1;
+}
+
+// history는 최신순 배열 -> 맨 앞부터 "완료 + 하루 간격"이 끊기기 전까지의 연속 일수
+function calculateStreakDays(history: HistoryRecord[]): number {
+  let streak = 0;
+  for (let i = 0; i < history.length; i++) {
+    if (history[i].status !== "completed") break;
+    if (i > 0 && !isConsecutiveDay(history[i].date, history[i - 1].date)) {
+      break;
+    }
+    streak++;
+  }
+  return streak;
+}
+
+function toDisplayRecord(record: HistoryRecord): DisplayRecord {
+  return {
+    id: record.id,
+    date: formatDisplayDate(record.date),
+    time: formatDisplayTime(record.completedAt),
+    isCompleted: record.status === "completed",
+    photos: record.checklist.map((item) => item.imageUri),
+  };
 }
 
 function PhotoThumbnail({ photoUrl }: { photoUrl: string | null }) {
@@ -131,7 +119,7 @@ function RecordCard({
   record,
   onClick,
 }: {
-  record: HistoryRecord;
+  record: DisplayRecord;
   onClick: () => void;
 }) {
   return (
@@ -173,7 +161,15 @@ function RecordCard({
 }
 
 function HistoryPage() {
-  const recentRecords = mockRecords.filter((r) => isWithinLastMonth(r.date));
+  const history = useAppStore((state) => state.history);
+
+  // checkDateChange()가 매달 이전 달 기록을 정리하므로, history는 항상 이번 달 기록만 담고 있음
+  const streakDays = calculateStreakDays(history);
+  const monthTotal = history.length;
+  const monthCompleted = history.filter(
+    (record) => record.status === "completed",
+  ).length;
+  const records = history.map(toDisplayRecord);
 
   return (
     <div style={containerStyle}>
@@ -191,7 +187,7 @@ function HistoryPage() {
           <span style={emojiStyle}>🔥</span>
           <div style={summaryTextColStyle}>
             <Text typography="t2" fontWeight="bold" color={colors.white}>
-              {mockStats.streakDays}일 연속 완료
+              {streakDays}일 연속 완료
             </Text>
             <Text
               typography="t5"
@@ -199,15 +195,14 @@ function HistoryPage() {
               color={colors.white}
               style={{ marginTop: 6, display: "block" }}
             >
-              이번 달 {mockStats.monthTotal}일 중 {mockStats.monthCompleted}일
-              완료
+              이번 달 {monthTotal}일 중 {monthCompleted}일 완료
             </Text>
           </div>
         </div>
 
         {/* Record List */}
         <div style={recordListStyle}>
-          {recentRecords.map((record) => (
+          {records.map((record) => (
             <RecordCard
               key={record.id}
               record={record}
