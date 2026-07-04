@@ -4,9 +4,12 @@ import { colors } from "@toss/tds-colors";
 import { IoChevronForward, IoChevronDown } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import BottomNavigation from "../components/BottomNavigation";
+import { useAppStore } from "../store/useAppStore";
+import type { WeekDay } from "../store/types";
 
 type DayKey = "월" | "화" | "수" | "목" | "금" | "토" | "일";
 type DropdownType = "ampm" | "hour" | "minute" | null;
+type AmPm = "오전" | "오후";
 
 const DAYS: DayKey[] = ["월", "화", "수", "목", "금", "토", "일"];
 const AMPM_OPTIONS = ["오전", "오후"];
@@ -27,6 +30,46 @@ const MINUTE_OPTIONS = [
   "50",
   "55",
 ];
+
+// UI(한글 요일) <-> Store(WeekDay 영문 코드) 변환
+const DAY_KEY_TO_WEEK_DAY: Record<DayKey, WeekDay> = {
+  월: "MON",
+  화: "TUE",
+  수: "WED",
+  목: "THU",
+  금: "FRI",
+  토: "SAT",
+  일: "SUN",
+};
+
+const WEEK_DAY_TO_DAY_KEY: Record<WeekDay, DayKey> = {
+  MON: "월",
+  TUE: "화",
+  WED: "수",
+  THU: "목",
+  FRI: "금",
+  SAT: "토",
+  SUN: "일",
+};
+
+// Store(24시간 "HH:mm") <-> UI(오전/오후 + 12시간) 변환
+function timeToParts(time: string): {
+  ampm: AmPm;
+  hour: string;
+  minute: string;
+} {
+  const [hourStr, minute] = time.split(":");
+  const hour24 = Number(hourStr);
+  const ampm: AmPm = hour24 < 12 ? "오전" : "오후";
+  const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
+  return { ampm, hour: String(hour12).padStart(2, "0"), minute };
+}
+
+function partsToTime(ampm: AmPm, hour: string, minute: string): string {
+  const hour12 = Number(hour);
+  const hour24 = ampm === "오후" ? (hour12 % 12) + 12 : hour12 % 12;
+  return `${String(hour24).padStart(2, "0")}:${minute}`;
+}
 
 interface DropdownProps {
   value: string;
@@ -85,17 +128,21 @@ function Dropdown({
 
 function SettingsPage() {
   const navigate = useNavigate();
-  const [selectedDays, setSelectedDays] = useState<DayKey[]>(["월"]);
-  const [ampm, setAmpm] = useState("오전");
-  const [hour, setHour] = useState("08");
-  const [minute, setMinute] = useState("00");
-  const [notificationEnabled, setNotificationEnabled] = useState(true);
+  const spaceName = useAppStore((state) => state.current.spaceName);
+  const settings = useAppStore((state) => state.current.settings);
+  const updateSettings = useAppStore((state) => state.updateSettings);
+
   const [openDropdown, setOpenDropdown] = useState<DropdownType>(null);
 
+  const selectedDays = settings.days.map((day) => WEEK_DAY_TO_DAY_KEY[day]);
+  const { ampm, hour, minute } = timeToParts(settings.time);
+
   const toggleDay = (day: DayKey) => {
-    setSelectedDays((prev) =>
-      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day],
-    );
+    const weekDay = DAY_KEY_TO_WEEK_DAY[day];
+    const nextDays = settings.days.includes(weekDay)
+      ? settings.days.filter((d) => d !== weekDay)
+      : [...settings.days, weekDay];
+    updateSettings({ ...settings, days: nextDays });
   };
 
   const handleDropdownToggle = (type: NonNullable<DropdownType>) => {
@@ -106,9 +153,13 @@ function SettingsPage() {
     type: NonNullable<DropdownType>,
     value: string,
   ) => {
-    if (type === "ampm") setAmpm(value);
-    else if (type === "hour") setHour(value);
-    else if (type === "minute") setMinute(value);
+    const nextAmpm = type === "ampm" ? (value as AmPm) : ampm;
+    const nextHour = type === "hour" ? value : hour;
+    const nextMinute = type === "minute" ? value : minute;
+    updateSettings({
+      ...settings,
+      time: partsToTime(nextAmpm, nextHour, nextMinute),
+    });
     setOpenDropdown(null);
   };
 
@@ -138,7 +189,7 @@ function SettingsPage() {
           onClick={() => navigate("/settings/space-name")}
         >
           <Text typography="t5" fontWeight="regular" color={colors.grey900}>
-            우리집
+            {spaceName}
           </Text>
           <IoChevronForward size={20} color={colors.grey400} />
         </button>
@@ -240,10 +291,15 @@ function SettingsPage() {
               알림 활성화
             </Text>
             <button
-              style={toggleTrackStyle(notificationEnabled)}
-              onClick={() => setNotificationEnabled((prev) => !prev)}
+              style={toggleTrackStyle(settings.notificationEnabled)}
+              onClick={() =>
+                updateSettings({
+                  ...settings,
+                  notificationEnabled: !settings.notificationEnabled,
+                })
+              }
               role="switch"
-              aria-checked={notificationEnabled}
+              aria-checked={settings.notificationEnabled}
             >
               <div style={toggleThumbStyle} />
             </button>
