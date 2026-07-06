@@ -123,6 +123,7 @@ export const useAppStore = create<Store>()(
       // 오늘 인증 완료 처리: current.isTodayCompleted/completedAt 갱신 + current를
       // Deep Copy한 HistoryRecord를 생성해 history 맨 앞(최신순)에 추가
       completeToday: () => {
+        console.log("1 ✅ completeToday 시작");
         const completedAt = new Date().toISOString();
 
         set((state) => {
@@ -133,6 +134,7 @@ export const useAppStore = create<Store>()(
             status: "completed",
             checklist: state.current.checklist.map((item) => ({ ...item })),
           };
+          console.log("2 ✅ completeToday가 생성한 History", newHistory);
 
           return {
             current: {
@@ -146,29 +148,89 @@ export const useAppStore = create<Store>()(
       },
       // 날짜가 바뀌었으면: 지난 하루를 History로 스냅샷 저장하고,
       // 월이 바뀌었으면 지난 달 History를 전부 삭제한 뒤, Current(사진/인증 상태)를 초기화
+      // checkDateChange: () => {
+      //   console.log("3 🔄 checkDateChange");
+      //   const today = formatDate(new Date("2026-07-10"));
+
+      //   set((state) => {
+      //     // 날짜가 바뀌지 않았다면 아무 작업도 하지 않음
+      //     if (!isNewDay(state.current.lastActiveDate, today)) {
+      //       return state;
+      //     }
+      //     console.log("4 isTodayCompleted", state.current.isTodayCompleted);
+
+      //     const newHistory: HistoryRecord = {
+      //       id: crypto.randomUUID(),
+      //       date: state.current.lastActiveDate,
+      //       completedAt: state.current.isTodayCompleted
+      //         ? state.current.completedAt
+      //         : null,
+      //       status: state.current.isTodayCompleted ? "completed" : "incomplete",
+      //       checklist: state.current.checklist.map((item) => ({ ...item })),
+      //     };
+      //     console.log("5 📝 newHistory 생성", newHistory);
+
+      //     const history = [newHistory, ...state.history];
+
+      //     // 월이 바뀌었다면 이전 달 History(방금 만든 기록 포함)를 모두 삭제
+      //     const monthChanged = isNewMonth(state.current.lastActiveDate, today);
+
+      //     console.log("6", newHistory);
+
+      //     return {
+      //       current: {
+      //         ...state.current,
+      //         checklist: state.current.checklist.map((item) => ({
+      //           ...item,
+      //           imageUri: null,
+      //         })),
+      //         isTodayCompleted: false,
+      //         completedAt: null,
+      //         lastActiveDate: today,
+      //       },
+      //       history: monthChanged ? [] : history,
+      //     };
+      //   });
+      // },
       checkDateChange: () => {
-        const today = formatDate(new Date());
+        const today = formatDate(new Date("2026-07-11"));
 
         set((state) => {
-          // 날짜가 바뀌지 않았다면 아무 작업도 하지 않음
+          //같은 날이면 state 반환
           if (!isNewDay(state.current.lastActiveDate, today)) {
+            //하루경과됨
             return state;
           }
 
+          const monthChanged = isNewMonth(state.current.lastActiveDate, today);
+          //년과 달 다르면 true
+
+          // 이미 completeToday()에서 History를 생성한 경우
+          // History는 추가하지 않고 Current만 초기화
+          if (state.current.isTodayCompleted) {
+            return {
+              current: {
+                ...state.current,
+                checklist: state.current.checklist.map((item) => ({
+                  ...item,
+                  imageUri: null,
+                })),
+                isTodayCompleted: false,
+                completedAt: null,
+                lastActiveDate: today,
+              },
+              history: monthChanged ? [] : state.history,
+            };
+          }
+
+          // 미완료인 경우만 History 생성
           const newHistory: HistoryRecord = {
             id: crypto.randomUUID(),
             date: state.current.lastActiveDate,
-            completedAt: state.current.isTodayCompleted
-              ? state.current.completedAt
-              : null,
-            status: state.current.isTodayCompleted ? "completed" : "incomplete",
+            completedAt: null,
+            status: "incomplete",
             checklist: state.current.checklist.map((item) => ({ ...item })),
           };
-
-          const history = [newHistory, ...state.history];
-
-          // 월이 바뀌었다면 이전 달 History(방금 만든 기록 포함)를 모두 삭제
-          const monthChanged = isNewMonth(state.current.lastActiveDate, today);
 
           return {
             current: {
@@ -181,7 +243,7 @@ export const useAppStore = create<Store>()(
               completedAt: null,
               lastActiveDate: today,
             },
-            history: monthChanged ? [] : history,
+            history: monthChanged ? [] : [newHistory, ...state.history],
           };
         });
       },

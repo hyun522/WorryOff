@@ -16,7 +16,7 @@ export function formatDate(date: Date): string {
 export function isNewDay(prevDate: string, currentDate: string): boolean {
   const prev = parseDateOnly(prevDate);
   const current = parseDateOnly(currentDate);
-  return prev.getTime() !== current.getTime();
+  return prev.getTime() !== current.getTime(); //다른날 true
 }
 
 // 두 "YYYY-MM-DD" 문자열의 연도 또는 월이 다른지 판별 (History 자동 삭제 정책용)
@@ -24,6 +24,7 @@ export function isNewMonth(prevDate: string, currentDate: string): boolean {
   const prev = parseDateOnly(prevDate);
   const current = parseDateOnly(currentDate);
   return (
+    //년, 달 다르면 true
     prev.getFullYear() !== current.getFullYear() ||
     prev.getMonth() !== current.getMonth()
   );
