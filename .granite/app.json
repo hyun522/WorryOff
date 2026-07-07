@@ -1,4 +1,21 @@
 {
   "appName": "worry-off",
-  "permissions": []
+  "permissions": [
+    {
+      "name": "clipboard",
+      "access": "read"
+    },
+    {
+      "name": "clipboard",
+      "access": "write"
+    },
+    {
+      "name": "camera",
+      "access": "access"
+    },
+    {
+      "name": "photos",
+      "access": "read"
+    }
+  ]
 }
