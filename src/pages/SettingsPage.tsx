@@ -126,6 +126,8 @@ function Dropdown({
   );
 }
 
+const NOTIFICATION_CARD_ENABLED = false;
+
 function SettingsPage() {
   const navigate = useNavigate();
   const spaceName = useAppStore((state) => state.current.spaceName);
@@ -208,103 +210,105 @@ function SettingsPage() {
 
         <div style={{ height: 24 }} />
 
-        {/* 알림 설정 카드 */}
-        <div style={notificationCardStyle} onClick={(e) => e.stopPropagation()}>
-          <Text typography="t4" fontWeight="bold" color={colors.grey900}>
-            알림 설정
-          </Text>
-
-          {/* 반복 */}
-          <div>
-            <Text
-              typography="t6"
-              fontWeight="regular"
-              color={colors.grey500}
-              style={{ display: "block", marginBottom: 10 }}
-            >
-              반복
+        {/* 알림 설정 카드 (임시 비활성화) */}
+        {NOTIFICATION_CARD_ENABLED && (
+          <div style={notificationCardStyle} onClick={(e) => e.stopPropagation()}>
+            <Text typography="t4" fontWeight="bold" color={colors.grey900}>
+              알림 설정
             </Text>
-            <div style={dayRowStyle}>
-              {DAYS.map((day) => {
-                const active = selectedDays.includes(day);
-                return (
-                  <button
-                    key={day}
-                    style={dayButtonStyle(active)}
-                    onClick={() => toggleDay(day)}
-                  >
-                    <Text
-                      typography="t6"
-                      fontWeight={active ? "bold" : "regular"}
-                      color={active ? colors.white : colors.grey600}
+
+            {/* 반복 */}
+            <div>
+              <Text
+                typography="t6"
+                fontWeight="regular"
+                color={colors.grey500}
+                style={{ display: "block", marginBottom: 10 }}
+              >
+                반복
+              </Text>
+              <div style={dayRowStyle}>
+                {DAYS.map((day) => {
+                  const active = selectedDays.includes(day);
+                  return (
+                    <button
+                      key={day}
+                      style={dayButtonStyle(active)}
+                      onClick={() => toggleDay(day)}
                     >
-                      {day}
-                    </Text>
-                  </button>
-                );
-              })}
+                      <Text
+                        typography="t6"
+                        fontWeight={active ? "bold" : "regular"}
+                        color={active ? colors.white : colors.grey600}
+                      >
+                        {day}
+                      </Text>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div style={dividerStyle} />
+
+            {/* 시간 */}
+            <div>
+              <Text
+                typography="t6"
+                fontWeight="regular"
+                color={colors.grey500}
+                style={{ display: "block", marginBottom: 10 }}
+              >
+                시간
+              </Text>
+              <div style={dropdownRowStyle}>
+                <Dropdown
+                  value={ampm}
+                  options={AMPM_OPTIONS}
+                  isOpen={openDropdown === "ampm"}
+                  onToggle={() => handleDropdownToggle("ampm")}
+                  onSelect={(v) => handleDropdownSelect("ampm", v)}
+                />
+                <Dropdown
+                  value={hour}
+                  options={HOUR_OPTIONS}
+                  isOpen={openDropdown === "hour"}
+                  onToggle={() => handleDropdownToggle("hour")}
+                  onSelect={(v) => handleDropdownSelect("hour", v)}
+                />
+                <Dropdown
+                  value={minute}
+                  options={MINUTE_OPTIONS}
+                  isOpen={openDropdown === "minute"}
+                  onToggle={() => handleDropdownToggle("minute")}
+                  onSelect={(v) => handleDropdownSelect("minute", v)}
+                />
+              </div>
+            </div>
+
+            <div style={dividerStyle} />
+
+            {/* 알림 활성화 */}
+            <div style={toggleRowStyle}>
+              <Text typography="t5" fontWeight="regular" color={colors.grey900}>
+                알림 활성화
+              </Text>
+              <button
+                style={toggleTrackStyle(settings.notificationEnabled)}
+                onClick={() =>
+                  updateSettings({
+                    ...settings,
+                    notificationEnabled: !settings.notificationEnabled,
+                  })
+                }
+                role="switch"
+                aria-checked={settings.notificationEnabled}
+              >
+                <div style={toggleThumbStyle} />
+              </button>
             </div>
           </div>
-
-          <div style={dividerStyle} />
-
-          {/* 시간 */}
-          <div>
-            <Text
-              typography="t6"
-              fontWeight="regular"
-              color={colors.grey500}
-              style={{ display: "block", marginBottom: 10 }}
-            >
-              시간
-            </Text>
-            <div style={dropdownRowStyle}>
-              <Dropdown
-                value={ampm}
-                options={AMPM_OPTIONS}
-                isOpen={openDropdown === "ampm"}
-                onToggle={() => handleDropdownToggle("ampm")}
-                onSelect={(v) => handleDropdownSelect("ampm", v)}
-              />
-              <Dropdown
-                value={hour}
-                options={HOUR_OPTIONS}
-                isOpen={openDropdown === "hour"}
-                onToggle={() => handleDropdownToggle("hour")}
-                onSelect={(v) => handleDropdownSelect("hour", v)}
-              />
-              <Dropdown
-                value={minute}
-                options={MINUTE_OPTIONS}
-                isOpen={openDropdown === "minute"}
-                onToggle={() => handleDropdownToggle("minute")}
-                onSelect={(v) => handleDropdownSelect("minute", v)}
-              />
-            </div>
-          </div>
-
-          <div style={dividerStyle} />
-
-          {/* 알림 활성화 */}
-          <div style={toggleRowStyle}>
-            <Text typography="t5" fontWeight="regular" color={colors.grey900}>
-              알림 활성화
-            </Text>
-            <button
-              style={toggleTrackStyle(settings.notificationEnabled)}
-              onClick={() =>
-                updateSettings({
-                  ...settings,
-                  notificationEnabled: !settings.notificationEnabled,
-                })
-              }
-              role="switch"
-              aria-checked={settings.notificationEnabled}
-            >
-              <div style={toggleThumbStyle} />
-            </button>
-          </div>
-        </div>
+        )}
       </div>
 
       <BottomNavigation />
