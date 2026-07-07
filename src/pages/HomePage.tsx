@@ -2,8 +2,9 @@ import type { CSSProperties } from "react";
 import { useEffect, useState } from "react";
 import { Button, Text } from "@toss/tds-mobile";
 import { colors } from "@toss/tds-colors";
-import { IoCameraOutline, IoCheckmarkCircle } from "react-icons/io5";
+import { IoCameraOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import { openCamera, fetchAlbumPhotos } from "@apps-in-toss/web-framework";
 import BottomNavigation from "../components/BottomNavigation";
 import PhotoUploadBottomSheet from "../components/PhotoUploadBottomSheet";
 import ProgressCard from "../components/ProgressCard";
@@ -37,7 +38,7 @@ function PhotoThumbnail({
   photoUrl: string | null;
   onClick: () => void;
 }) {
-  if (photoUrl && photoUrl !== "mock") {
+  if (photoUrl) {
     return (
       <button
         style={photoThumbnailButtonStyle}
@@ -45,17 +46,6 @@ function PhotoThumbnail({
         aria-label="사진 변경"
       >
         <img src={photoUrl} alt="인증 사진" style={photoImageStyle} />
-      </button>
-    );
-  }
-  if (photoUrl === "mock") {
-    return (
-      <button
-        style={photoRegisteredThumbnailStyle}
-        onClick={onClick}
-        aria-label="사진 변경"
-      >
-        <IoCheckmarkCircle size={24} color={colors.blue500} />
       </button>
     );
   }
@@ -102,12 +92,39 @@ function HomePage() {
     setBottomSheetVisible(true);
   }
 
-  function handlePhotoSelected() {
-    if (selectedItemId !== null) {
-      updateChecklistImage(selectedItemId, "mock");
-    }
+  async function handleTakePhoto() {
+    const itemId = selectedItemId;
     setBottomSheetVisible(false);
     setSelectedItemId(null);
+
+    if (itemId === null) return;
+
+    try {
+      const photo = await openCamera({ maxWidth: 1024 });
+      updateChecklistImage(itemId, photo.dataUri);
+      console.log("[1] dataUri:", photo.dataUri.slice(0, 30));
+    } catch (error) {
+      console.error("사진 촬영에 실패했어요:", error);
+      alert("사진 촬영에 실패했어요. 카메라 권한을 확인해주세요.");
+    }
+  }
+
+  async function handleSelectFromAlbum() {
+    const itemId = selectedItemId;
+    setBottomSheetVisible(false);
+    setSelectedItemId(null);
+
+    if (itemId === null) return;
+
+    try {
+      const photos = await fetchAlbumPhotos({ maxCount: 1, maxWidth: 1024 });
+      if (photos.length > 0) {
+        updateChecklistImage(itemId, photos[0].dataUri);
+      }
+    } catch (error) {
+      console.error("앨범에서 사진을 가져오지 못했어요:", error);
+      alert("앨범에서 사진을 가져오지 못했어요. 앨범 권한을 확인해주세요.");
+    }
   }
 
   function handleCloseBottomSheet() {
@@ -225,8 +242,8 @@ function HomePage() {
       <PhotoUploadBottomSheet
         visible={bottomSheetVisible}
         onClose={handleCloseBottomSheet}
-        onTakePhoto={handlePhotoSelected}
-        onSelectFromAlbum={handlePhotoSelected}
+        onTakePhoto={handleTakePhoto}
+        onSelectFromAlbum={handleSelectFromAlbum}
       />
 
       {/* Certification Complete Modal */}
@@ -329,11 +346,6 @@ const photoThumbnailButtonStyle: CSSProperties = {
   cursor: "pointer",
   overflow: "hidden",
   padding: 0,
-};
-
-const photoRegisteredThumbnailStyle: CSSProperties = {
-  ...photoThumbnailButtonStyle,
-  backgroundColor: colors.blue50,
 };
 
 const photoImageStyle: CSSProperties = {
