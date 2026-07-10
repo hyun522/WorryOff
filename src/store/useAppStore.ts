@@ -194,7 +194,7 @@ export const useAppStore = create<Store>()(
       //   });
       // },
       checkDateChange: () => {
-        const today = formatDate(new Date("2026-07-11"));
+        const today = formatDate(new Date());
 
         set((state) => {
           //같은 날이면 state 반환
