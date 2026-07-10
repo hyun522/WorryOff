@@ -11,10 +11,11 @@ export default defineConfig({
     host: "0.0.0.0",
     port: 5173,
     commands: {
-      dev: "vite --host",
+      dev: "vite --host 0.0.0.0 --port 5173",
       build: "vite build",
     },
   },
+
   permissions: [
     {
       name: "clipboard",
@@ -34,4 +35,7 @@ export default defineConfig({
     },
   ],
   outdir: "dist",
+  webViewProps: {
+    type: "partner", //비게임
+  },
 });
