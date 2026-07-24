@@ -12,7 +12,7 @@ function OnboardingPage() {
 
   function handleStart() {
     completeOnboarding();
-    navigate("/home");
+    navigate("/settings");
   }
 
   return (
@@ -53,7 +53,7 @@ function OnboardingPage() {
           onClick={handleStart}
           style={primaryButtonStyle}
         >
-          시작하기
+          설정하기
         </Button>
       </div>
     </div>
