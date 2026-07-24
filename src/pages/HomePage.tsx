@@ -10,6 +10,7 @@ import PhotoUploadBottomSheet from "../components/PhotoUploadBottomSheet";
 import ProgressCard from "../components/ProgressCard";
 import CompletedContent from "../components/CompletedContent";
 import CertificationCompleteModal from "../components/CertificationCompleteModal";
+import HomeEmptyState from "../components/HomeEmptyState";
 import { useAppStore } from "../store/useAppStore";
 
 function CheckCircleIcon({ completed }: { completed: boolean }) {
@@ -86,6 +87,7 @@ function HomePage() {
   const progressPercent = (completedCount / totalCount) * 100;
   const allPhotosAttached = completedCount === totalCount;
   const isCompleted = isTodayCompleted;
+  const isSpaceUnset = !spaceName && checklist.length === 0;
 
   function handleThumbnailClick(itemId: string) {
     setSelectedItemId(itemId);
@@ -159,68 +161,82 @@ function HomePage() {
 
   return (
     <div style={containerStyle}>
-      {/* Header */}
-      <div style={headerStyle}>
-        <Text typography="t2" fontWeight="bold" color={colors.grey900}>
-          {spaceName}
-        </Text>
-      </div>
-
-      {/* Scrollable content */}
-      <div style={scrollContentStyle}>
-        {/* Progress Card */}
-        <ProgressCard
-          title="오늘의 진행 상태"
-          completedCount={completedCount}
-          totalCount={totalCount}
-          progress={progressPercent}
-        />
-
-        {/* Content: In Progress / Completed */}
-        {isCompleted ? (
-          <CompletedContent />
-        ) : (
-          <div style={checklistSectionStyle}>
-            <div style={checklistHeaderRowStyle}>
-              <Text typography="t4" fontWeight="bold" color={colors.grey900}>
-                체크리스트
-              </Text>
-            </div>
-
-            <div style={checklistListStyle}>
-              {checklist.map((item, index) => {
-                const completed = !!item.imageUri;
-                return (
-                  <div key={item.id}>
-                    <div style={checklistItemStyle}>
-                      <CheckCircleIcon completed={completed} />
-                      <Text
-                        typography="t5"
-                        fontWeight="regular"
-                        color={completed ? colors.grey900 : colors.grey500}
-                        style={{ flex: 1, marginLeft: 12 }}
-                      >
-                        {item.title}
-                      </Text>
-                      <PhotoThumbnail
-                        photoUrl={item.imageUri}
-                        onClick={() => handleThumbnailClick(item.id)}
-                      />
-                    </div>
-                    {index < checklist.length - 1 && (
-                      <div style={dividerStyle} />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+      {isSpaceUnset ? (
+        <div style={scrollContentStyle}>
+          <HomeEmptyState />
+        </div>
+      ) : (
+        <>
+          {/* Header */}
+          <div style={headerStyle}>
+            <Text typography="t2" fontWeight="bold" color={colors.grey900}>
+              {spaceName}
+            </Text>
           </div>
-        )}
-      </div>
+
+          {/* Scrollable content */}
+          <div style={scrollContentStyle}>
+            {/* Progress Card */}
+            <ProgressCard
+              title="오늘의 진행 상태"
+              completedCount={completedCount}
+              totalCount={totalCount}
+              progress={progressPercent}
+            />
+
+            {/* Content: In Progress / Completed */}
+            {isCompleted ? (
+              <CompletedContent />
+            ) : (
+              <div style={checklistSectionStyle}>
+                <div style={checklistHeaderRowStyle}>
+                  <Text
+                    typography="t4"
+                    fontWeight="bold"
+                    color={colors.grey900}
+                  >
+                    체크리스트
+                  </Text>
+                </div>
+
+                <div style={checklistListStyle}>
+                  {checklist.map((item, index) => {
+                    const completed = !!item.imageUri;
+                    return (
+                      <div key={item.id}>
+                        <div style={checklistItemStyle}>
+                          <CheckCircleIcon completed={completed} />
+                          <Text
+                            typography="t5"
+                            fontWeight="regular"
+                            color={
+                              completed ? colors.grey900 : colors.grey500
+                            }
+                            style={{ flex: 1, marginLeft: 12 }}
+                          >
+                            {item.title}
+                          </Text>
+                          <PhotoThumbnail
+                            photoUrl={item.imageUri}
+                            onClick={() => handleThumbnailClick(item.id)}
+                          />
+                        </div>
+                        {index < checklist.length - 1 && (
+                          <div style={dividerStyle} />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        </>
+      )}
 
       {/* Bottom Area */}
       <div style={bottomAreaStyle}>
-        {!isCompleted && (
+        {!isSpaceUnset && !isCompleted && (
           <div style={ctaWrapperStyle}>
             <Button
               display="full"
