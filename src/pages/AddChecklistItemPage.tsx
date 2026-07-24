@@ -17,7 +17,7 @@ function AddChecklistItemPage() {
 
   function handleAdd() {
     addChecklist(value);
-    navigate("/settings/checklist");
+    navigate(-1);
   }
 
   return (
@@ -26,7 +26,7 @@ function AddChecklistItemPage() {
       <div style={headerStyle}>
         <button
           style={backButtonStyle}
-          onClick={() => navigate("/settings/checklist")}
+          onClick={() => navigate(-1)}
           aria-label="뒤로가기"
         >
           <IoChevronBack size={24} color={colors.grey900} />
