@@ -94,7 +94,7 @@ export const useAppStore = create<Store>()(
       },
       // id가 일치하는 ChecklistItem의 imageUri만 등록/교체 (삭제는 지원하지 않음, title/id는 불변)
       updateChecklistImage: (id, imageUri) => {
-        console.log("[2] 저장되는 imageUri:", imageUri);
+        // console.log("[2] 저장되는 imageUri:", imageUri);
         set((state) => ({
           current: {
             ...state.current,
