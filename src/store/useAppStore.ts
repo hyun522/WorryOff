@@ -12,6 +12,7 @@ import {
   DEFAULT_SPACE_NAME,
 } from "./constants";
 import { formatDate, isNewDay, isNewMonth } from "./utils";
+import { v4 as uuid } from "uuid";
 
 /**
  * Worry OFF Global Store
@@ -67,7 +68,7 @@ export const useAppStore = create<Store>()(
             ...state.current,
             checklist: [
               ...state.current.checklist,
-              { id: crypto.randomUUID(), title, imageUri: null },
+              { id: uuid(), title, imageUri: null },
             ],
           },
         }));
@@ -129,7 +130,7 @@ export const useAppStore = create<Store>()(
 
         set((state) => {
           const newHistory: HistoryRecord = {
-            id: crypto.randomUUID(),
+            id: uuid(),
             date: state.current.lastActiveDate,
             completedAt,
             status: "completed",
@@ -226,7 +227,7 @@ export const useAppStore = create<Store>()(
 
           // 미완료인 경우만 History 생성
           const newHistory: HistoryRecord = {
-            id: crypto.randomUUID(),
+            id: uuid(),
             date: state.current.lastActiveDate,
             completedAt: null,
             status: "incomplete",
