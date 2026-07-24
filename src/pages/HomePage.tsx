@@ -100,11 +100,14 @@ function HomePage() {
     if (itemId === null) return;
 
     try {
-      const photo = await openCamera({ maxWidth: 1024 });
-      updateChecklistImage(itemId, photo.dataUri);
-      console.log("[1] dataUri:", photo.dataUri.slice(0, 30));
+      const photo = await openCamera({ maxWidth: 1024, base64: true });
+      const imageUri = `data:image/jpeg;base64,${photo.dataUri}`;
+      updateChecklistImage(itemId, imageUri);
     } catch (error) {
       console.error("사진 촬영에 실패했어요:", error);
+      if (error instanceof Error && error.message.includes("취소")) {
+        return;
+      }
       alert("사진 촬영에 실패했어요. 카메라 권한을 확인해주세요.");
     }
   }
@@ -117,9 +120,14 @@ function HomePage() {
     if (itemId === null) return;
 
     try {
-      const photos = await fetchAlbumPhotos({ maxCount: 1, maxWidth: 1024 });
+      const photos = await fetchAlbumPhotos({
+        maxCount: 1,
+        maxWidth: 1024,
+        base64: true,
+      });
       if (photos.length > 0) {
-        updateChecklistImage(itemId, photos[0].dataUri);
+        const imageUri = `data:image/jpeg;base64,${photos[0].dataUri}`;
+        updateChecklistImage(itemId, imageUri);
       }
     } catch (error) {
       console.error("앨범에서 사진을 가져오지 못했어요:", error);
