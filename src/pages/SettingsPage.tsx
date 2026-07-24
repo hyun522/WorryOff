@@ -130,7 +130,6 @@ const NOTIFICATION_CARD_ENABLED = false;
 
 function SettingsPage() {
   const navigate = useNavigate();
-  const spaceName = useAppStore((state) => state.current.spaceName);
   const settings = useAppStore((state) => state.current.settings);
   const updateSettings = useAppStore((state) => state.updateSettings);
 
@@ -176,22 +175,12 @@ function SettingsPage() {
 
       {/* Scrollable Content */}
       <div style={scrollContentStyle}>
-        {/* 공간 이름 설정 */}
-        <Text
-          typography="t6"
-          fontWeight="regular"
-          color={colors.grey500}
-          style={{ marginBottom: 8, display: "block" }}
-        >
-          공간 이름 설정
-        </Text>
-
         <button
           style={navCardStyle}
           onClick={() => navigate("/settings/space-name")}
         >
           <Text typography="t5" fontWeight="regular" color={colors.grey900}>
-            {spaceName}
+            공간이름지정
           </Text>
           <IoChevronForward size={20} color={colors.grey400} />
         </button>
