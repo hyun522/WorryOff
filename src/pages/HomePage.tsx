@@ -4,7 +4,12 @@ import { Button, Text } from "@toss/tds-mobile";
 import { colors } from "@toss/tds-colors";
 import { IoCameraOutline, IoChevronForward } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
-import { openCamera, fetchAlbumPhotos } from "@apps-in-toss/web-framework";
+import {
+  openCamera,
+  fetchAlbumPhotos,
+  OpenCameraPermissionError,
+  FetchAlbumPhotosPermissionError,
+} from "@apps-in-toss/web-framework";
 import BottomNavigation from "../components/BottomNavigation";
 import PhotoUploadBottomSheet from "../components/PhotoUploadBottomSheet";
 import ProgressCard from "../components/ProgressCard";
@@ -109,11 +114,13 @@ function HomePage() {
       const imageUri = `data:image/jpeg;base64,${photo.dataUri}`;
       updateChecklistImage(itemId, imageUri);
     } catch (error) {
-      console.error("사진 촬영에 실패했어요:", error);
+      console.error("사진을 가져오는 데 실패했어요:", error);
       if (error instanceof Error && error.message.includes("취소")) {
         return;
       }
-      alert("사진 촬영에 실패했어요. 카메라 권한을 확인해주세요.");
+      if (error instanceof OpenCameraPermissionError) {
+        alert("사진 촬영에 실패했어요. 카메라 권한을 확인해주세요.");
+      }
     }
   }
 
@@ -136,7 +143,10 @@ function HomePage() {
       }
     } catch (error) {
       console.error("앨범에서 사진을 가져오지 못했어요:", error);
-      alert("앨범에서 사진을 가져오지 못했어요. 앨범 권한을 확인해주세요.");
+
+      if (error instanceof FetchAlbumPhotosPermissionError) {
+        alert("앨범에서 사진을 가져오지 못했어요. 앨범 권한을 확인해주세요.");
+      }
     }
   }
 
