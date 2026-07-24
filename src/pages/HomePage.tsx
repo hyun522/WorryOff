@@ -219,7 +219,7 @@ function HomePage() {
       </div>
 
       {/* Bottom Area */}
-      <div>
+      <div style={bottomAreaStyle}>
         {!isCompleted && (
           <div style={ctaWrapperStyle}>
             <Button
@@ -269,7 +269,8 @@ function HomePage() {
 const containerStyle: CSSProperties = {
   display: "flex",
   flexDirection: "column",
-  minHeight: "100dvh",
+  height: "100dvh",
+  overflow: "hidden",
   backgroundColor: colors.grey50,
   boxSizing: "border-box",
 };
@@ -279,6 +280,8 @@ const headerStyle: CSSProperties = {
   alignItems: "center",
   justifyContent: "space-between",
   padding: "24px 24px",
+  flexShrink: 0,
+  borderBottom: "1px solid #E5E7EB",
 };
 
 const scrollContentStyle: CSSProperties = {
@@ -364,6 +367,10 @@ const photoImageStyle: CSSProperties = {
 
 const ctaWrapperStyle: CSSProperties = {
   padding: "10px 20px 20px 20px",
+};
+
+const bottomAreaStyle: CSSProperties = {
+  flexShrink: 0,
 };
 
 export default HomePage;
