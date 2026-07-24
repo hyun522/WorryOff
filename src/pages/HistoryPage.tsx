@@ -4,6 +4,7 @@ import { colors } from "@toss/tds-colors";
 import { IoCameraOutline } from "react-icons/io5";
 import { FaCheckCircle } from "react-icons/fa";
 import BottomNavigation from "../components/BottomNavigation";
+import HistoryEmptyState from "../components/HistoryEmptyState";
 import { useAppStore } from "../store/useAppStore";
 import type { HistoryRecord } from "../store/types";
 
@@ -183,36 +184,42 @@ function HistoryPage() {
 
       {/* Content — 세로 스크롤 */}
       <div style={scrollContentStyle}>
-        {/* Summary Card */}
-        <div style={summaryCardStyle}>
-          <span style={emojiStyle}>🔥</span>
-          <div style={summaryTextColStyle}>
-            <Text typography="t2" fontWeight="bold" color={colors.white}>
-              {streakDays}일 연속 완료
-            </Text>
-            <Text
-              typography="t5"
-              fontWeight="regular"
-              color={colors.white}
-              style={{ marginTop: 6, display: "block" }}
-            >
-              이번 달 {monthTotal}일 중 {monthCompleted}일 완료
-            </Text>
-          </div>
-        </div>
+        {history.length === 0 ? (
+          <HistoryEmptyState />
+        ) : (
+          <>
+            {/* Summary Card */}
+            <div style={summaryCardStyle}>
+              <span style={emojiStyle}>🔥</span>
+              <div style={summaryTextColStyle}>
+                <Text typography="t2" fontWeight="bold" color={colors.white}>
+                  {streakDays}일 연속 완료
+                </Text>
+                <Text
+                  typography="t5"
+                  fontWeight="regular"
+                  color={colors.white}
+                  style={{ marginTop: 6, display: "block" }}
+                >
+                  이번 달 {monthTotal}일 중 {monthCompleted}일 완료
+                </Text>
+              </div>
+            </div>
 
-        {/* Record List */}
-        <div style={recordListStyle}>
-          {records.map((record) => (
-            <RecordCard
-              key={record.id}
-              record={record}
-              onClick={() => {
-                // 상세 페이지 이동 추후 구현
-              }}
-            />
-          ))}
-        </div>
+            {/* Record List */}
+            <div style={recordListStyle}>
+              {records.map((record) => (
+                <RecordCard
+                  key={record.id}
+                  record={record}
+                  onClick={() => {
+                    // 상세 페이지 이동 추후 구현
+                  }}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       {/* BottomNavigation — 고정 */}
