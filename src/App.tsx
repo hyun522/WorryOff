@@ -15,7 +15,7 @@ function App() {
   );
 
   return (
-    <BrowserRouter>
+    <BrowserRouter useTransitions={false}>
       <Routes>
         <Route
           path="/"
