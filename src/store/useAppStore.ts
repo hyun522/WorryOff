@@ -141,6 +141,10 @@ export const useAppStore = create<Store>()(
           return {
             current: {
               ...state.current,
+              checklist: state.current.checklist.map((item) => ({
+                ...item,
+                imageUri: null,
+              })),
               isTodayCompleted: true,
               completedAt,
             },
