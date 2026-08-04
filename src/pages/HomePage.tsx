@@ -88,11 +88,13 @@ function HomePage() {
     checkDateChange();
   }, [checkDateChange]);
 
-  const completedCount = checklist.filter((item) => !!item.imageUri).length;
   const totalCount = checklist.length;
+  const isCompleted = isTodayCompleted;
+  const completedCount = isCompleted
+    ? totalCount
+    : checklist.filter((item) => !!item.imageUri).length;
   const progressPercent = (completedCount / totalCount) * 100;
   const allPhotosAttached = completedCount === totalCount;
-  const isCompleted = isTodayCompleted;
   const hasSpaceName = !!spaceName;
   const hasChecklist = checklist.length > 0;
   const isSetupIncomplete = !hasSpaceName && !hasChecklist;
