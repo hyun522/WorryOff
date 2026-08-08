@@ -18,6 +18,7 @@ import CertificationCompleteModal from "../components/CertificationCompleteModal
 import HomeEmptyState from "../components/HomeEmptyState";
 import ChecklistEmptyState from "../components/ChecklistEmptyState";
 import { useAppStore } from "../store/useAppStore";
+import { base64ToBlob, uploadImage, getImageUrl } from "../lib/imageApi";
 
 function CheckCircleIcon({ completed }: { completed: boolean }) {
   if (completed) {
@@ -113,8 +114,9 @@ function HomePage() {
 
     try {
       const photo = await openCamera({ maxWidth: 1024, base64: true });
-      const imageUri = `data:image/jpeg;base64,${photo.dataUri}`;
-      updateChecklistImage(itemId, imageUri);
+      const blob = base64ToBlob(photo.dataUri, "image/jpeg");
+      const fileName = await uploadImage(blob);
+      updateChecklistImage(itemId, fileName);
     } catch (error) {
       console.error("사진을 가져오는 데 실패했어요:", error);
       if (error instanceof Error && error.message.includes("취소")) {
@@ -122,7 +124,9 @@ function HomePage() {
       }
       if (error instanceof OpenCameraPermissionError) {
         alert("사진 촬영에 실패했어요. 카메라 권한을 확인해주세요.");
+        return;
       }
+      alert("이미지 업로드에 실패했어요. 잠시 후 다시 시도해주세요.");
     }
   }
 
@@ -140,15 +144,18 @@ function HomePage() {
         base64: true,
       });
       if (photos.length > 0) {
-        const imageUri = `data:image/jpeg;base64,${photos[0].dataUri}`;
-        updateChecklistImage(itemId, imageUri);
+        const blob = base64ToBlob(photos[0].dataUri, "image/jpeg");
+        const fileName = await uploadImage(blob);
+        updateChecklistImage(itemId, fileName);
       }
     } catch (error) {
       console.error("앨범에서 사진을 가져오지 못했어요:", error);
 
       if (error instanceof FetchAlbumPhotosPermissionError) {
         alert("앨범에서 사진을 가져오지 못했어요. 앨범 권한을 확인해주세요.");
+        return;
       }
+      alert("이미지 업로드에 실패했어요. 잠시 후 다시 시도해주세요.");
     }
   }
 
@@ -246,7 +253,11 @@ function HomePage() {
                                 {item.title}
                               </Text>
                               <PhotoThumbnail
-                                photoUrl={item.imageUri}
+                                photoUrl={
+                                  item.imageUri
+                                    ? getImageUrl(item.imageUri)
+                                    : null
+                                }
                                 onClick={() => handleThumbnailClick(item.id)}
                               />
                             </div>
