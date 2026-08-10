@@ -113,6 +113,14 @@ function HomePage() {
     if (itemId === null) return;
 
     try {
+      const permission = await openCamera.getPermission();
+      if (permission === "denied") {
+        alert(
+          "카메라 권한이 꺼져 있어요. 설정에서 카메라 권한을 다시 켜주세요.",
+        );
+        return;
+      }
+
       const photo = await openCamera({ maxWidth: 1024, base64: true });
       const blob = base64ToBlob(photo.dataUri, "image/jpeg");
       const fileName = await uploadImage(blob);
@@ -138,6 +146,12 @@ function HomePage() {
     if (itemId === null) return;
 
     try {
+      const permission = await fetchAlbumPhotos.getPermission();
+      if (permission === "denied") {
+        alert("앨범 권한이 꺼져 있어요. 설정에서 앨범 권한을 다시 켜주세요.");
+        return;
+      }
+
       const photos = await fetchAlbumPhotos({
         maxCount: 1,
         maxWidth: 1024,
