@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = `http://${window.location.hostname}:3000`;
 
 /**
  * base64 문자열(접두사 없는 순수 payload)을 Blob으로 변환
