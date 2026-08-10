@@ -7,6 +7,7 @@ import BottomNavigation from "../components/BottomNavigation";
 import HistoryEmptyState from "../components/HistoryEmptyState";
 import { useAppStore } from "../store/useAppStore";
 import type { HistoryRecord } from "../store/types";
+import { getImageUrl } from "../lib/imageApi";
 
 // 화면 렌더링 전용 표시 형태 (store의 HistoryRecord를 사람이 읽는 문자열로 변환한 결과)
 interface DisplayRecord {
@@ -66,7 +67,9 @@ function toDisplayRecord(record: HistoryRecord): DisplayRecord {
     date: formatDisplayDate(record.date),
     time: formatDisplayTime(record.completedAt),
     isCompleted: record.status === "completed",
-    photos: record.checklist.map((item) => item.imageUri),
+    photos: record.checklist.map((item) =>
+      item.imageUri ? getImageUrl(item.imageUri) : null,
+    ),
   };
 }
 
