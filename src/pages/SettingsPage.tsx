@@ -4,6 +4,7 @@ import { colors } from "@toss/tds-colors";
 import { IoChevronForward, IoChevronDown } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import BottomNavigation from "../components/BottomNavigation";
+import BannerAdSlot from "../components/BannerAdSlot";
 import { useAppStore } from "../store/useAppStore";
 import type { WeekDay } from "../store/types";
 
@@ -300,6 +301,7 @@ function SettingsPage() {
         )}
       </div>
 
+      <BannerAdSlot />
       <BottomNavigation />
     </div>
   );

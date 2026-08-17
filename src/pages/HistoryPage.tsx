@@ -4,6 +4,7 @@ import { colors } from "@toss/tds-colors";
 import { IoCameraOutline } from "react-icons/io5";
 import { FaCheckCircle } from "react-icons/fa";
 import BottomNavigation from "../components/BottomNavigation";
+import BannerAdSlot from "../components/BannerAdSlot";
 import HistoryEmptyState from "../components/HistoryEmptyState";
 import { useAppStore } from "../store/useAppStore";
 import type { HistoryRecord } from "../store/types";
@@ -226,6 +227,7 @@ function HistoryPage() {
       </div>
 
       {/* BottomNavigation — 고정 */}
+      <BannerAdSlot />
       <BottomNavigation />
     </div>
   );

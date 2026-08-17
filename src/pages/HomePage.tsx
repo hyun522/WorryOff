@@ -11,6 +11,7 @@ import {
   FetchAlbumPhotosPermissionError,
 } from "@apps-in-toss/web-framework";
 import BottomNavigation from "../components/BottomNavigation";
+import BannerAdSlot from "../components/BannerAdSlot";
 import PhotoUploadBottomSheet from "../components/PhotoUploadBottomSheet";
 import ProgressCard from "../components/ProgressCard";
 import CompletedContent from "../components/CompletedContent";
@@ -317,6 +318,7 @@ function HomePage() {
             </Button>
           </div>
         )}
+        <BannerAdSlot />
         <BottomNavigation />
       </div>
 
